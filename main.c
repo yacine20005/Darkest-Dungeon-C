@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "structures.h"
 
 void initclasse(classe *c,  char nom[20], int att, int def, int hpmax, int rest){
     c -> att = att; 
@@ -42,5 +43,3 @@ int main(void)
     printf("Hello, World!\n");
     return 0;
 }
-
-#include "structures.h"
