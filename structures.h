@@ -1,6 +1,14 @@
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
 
+typedef enum
+{
+    type_classe,
+    type_personnage,
+    type_accessoire,
+    type_ennemie
+} type_struct;
+
 typedef struct
 {
     char nom[20];
@@ -8,7 +16,8 @@ typedef struct
     int def;
     int HPmax;
     int rest;
-} classe;
+    struct classe *suivant;
+} classe, liste_classe;
 
 typedef struct
 {
@@ -16,41 +25,31 @@ typedef struct
     classe type;
     int HP;
     int stress;
-    int nb_combat;
-} personnage;
+    int NBcombat;
+    struct personnage *suivant;
+} personnage, liste_personnage;
 
 typedef struct
 {
-
     char nom[20];
-
     int prix;
-
     int attbonus;
-
     int defbonus;
-
     int HPbonus;
-
     int heal_bonus;
-
     int strred;
-
-} accessoire;
+    struct accessoire *suivant;
+} accessoire, liste_accessoire;
 
 typedef struct
 {
-
     char nom[20];
-
     int niveauenn;
-
     int attenn;
-
     int defenn;
-
     int HPenn;
-
     int attstrenn;
+    struct ennemie *suivant;
+} ennemie, liste_ennemie;
 
-} ennemie;
+#endif // STRUCTURES_H
