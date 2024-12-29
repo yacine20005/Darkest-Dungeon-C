@@ -1,37 +1,61 @@
-classe* allouer_classe(classe *c, int nb){
-    c = (classe *)malloc(nb * sizeof(classe));
-    return c;
+int supprimer(void *liste, type_struct t)
+{
+    if (liste == NULL)
+    {
+        return 0;
+    }
+    switch (t)
+    {
+    case type_classe:
+    {
+        classe *c = (classe *)liste;
+        if (c->suivant == NULL)
+        {
+            free(c);
+            return 1;
+        }
+        liste = c->suivant;
+        free(c);
+        return 1;
+    }
+    case type_personnage:
+    {
+        personnage *p = (personnage *)liste;
+        if (p->suivant == NULL)
+        {
+            free(p);
+            return 1;
+        }
+        liste = p->suivant;
+        free(p);
+        return 1;
+    }
+    case type_accessoire:
+    {
+        accessoire *a = (accessoire *)liste;
+        if (a->suivant == NULL)
+        {
+            free(a);
+            return 1;
+        }
+        liste = a->suivant;
+        free(a);
+        return 1;
+    }
+    case type_ennemi:
+    {
+        ennemie *e = (ennemie *)liste;
+        if (e->suivant == NULL)
+        {
+            free(e);
+            return 1;
+        }
+        liste = e->suivant;
+        free(e);
+        return 1;
+    }
+    default:
+        printf("Le type n'est pas reconnu\n");
+        return 0;
+    }
 }
-
-personnage* allouer_personnage(personnage *p, int nb){
-    p = (personnage *)malloc(nb * sizeof(personnage));
-    return p;
-}
-
-ennemie* allouer_ennemie(ennemie *e, int nb){
-    e = (ennemie *)malloc(nb * sizeof(ennemie));
-    return e;
-}
-
-accessoire* allouer_accessoire(accessoire *a, int nb){
-    a = (accessoire *)malloc(nb * sizeof(accessoire));
-    return a;
-}
-
-
-
-void afficher_classe(classe *c){
-    printf("Nom : %s\n", c->nom);
-    printf("Attaque : %d\n", c->att);
-    printf("Defense : %d\n", c->def);
-    printf("HPmax : %d\n", c->HPmax);
-    printf("Restauration : %d\n", c->rest);
-}
-
-    ajouter_personnage(liste_p, "Gims", liste_c);
-    ajouter_personnage(liste_p, "Kaaris", liste_c);
-    ajouter_personnage(liste_p, "Ninho", liste_c);
-    ajouter_personnage(liste_p, "Nekfeu", liste_c);
-    ajouter_personnage(liste_p, "Damso", liste_c);
-    ajouter_personnage(liste_p, "Orelsan", liste_c);
-    ajouter_personnage(liste_p, "Vald", liste_c);
