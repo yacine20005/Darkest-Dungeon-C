@@ -178,11 +178,22 @@ int main(void)
     ajouter_classe(&lst_classe, "Vestale", 3, 0, 20, 10, TYPE_CLASSE);
     ajouter_classe(&lst_classe, "Chasseur de primes", 7, 3, 25, 3, TYPE_CLASSE);
     ajouter_classe(&lst_classe, "Maitre chien", 10, 6, 17, 5, TYPE_CLASSE);
+    ajouter_classe(&lst_classe, "Chien", 5, 2, 10, 0, TYPE_CLASSE);
+    ajouter_classe(&lst_classe, "Terroriste", 15, 0, 20, 0, TYPE_CLASSE);
+    ajouter_classe(&lst_classe, "ADC", 20, 0, 20, 0, TYPE_CLASSE);
+    ajouter_classe(&lst_classe, "Support", 5, 12, 20, 10, TYPE_CLASSE);
 
     ajouter_personnage(&lst_personnage, &lst_classe, "Kaaris", "Furie", TYPE_PERSONNAGE);
     ajouter_personnage(&lst_personnage, &lst_classe, "Damso", "Vestale", TYPE_PERSONNAGE);
     ajouter_personnage(&lst_personnage, &lst_classe, "Nekfeu", "Chasseur de primes", TYPE_PERSONNAGE);
     ajouter_personnage(&lst_personnage, &lst_classe, "Gims", "Maitre chien", TYPE_PERSONNAGE);
+    ajouter_personnage(&lst_personnage, &lst_classe, "Sammy", "Maitre chien", TYPE_PERSONNAGE);
+    ajouter_personnage(&lst_personnage, &lst_classe, "Scooby-doo", "Chien", TYPE_PERSONNAGE);
+    ajouter_personnage(&lst_personnage, &lst_classe, "Maissa Ben Hamouda", "Terroriste", TYPE_PERSONNAGE);
+    ajouter_personnage(&lst_personnage, &lst_classe, "Maxime", "ADC", TYPE_PERSONNAGE);
+    ajouter_personnage(&lst_personnage, &lst_classe, "Esteban", "Support", TYPE_PERSONNAGE);
+
+
 
     ajouter_accessoire(&lst_accessoire, "Bouclier", 10, 0, 5, 0, 0, 0, TYPE_ACCESSOIRE);
     ajouter_accessoire(&lst_accessoire, "Epee", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
@@ -193,6 +204,9 @@ int main(void)
     ajouter_ennemie(&lst_ennemie, "Serviteur", 3, 6, 4, 20, 0, TYPE_ENNEMIE);
     ajouter_ennemie(&lst_ennemie, "Athéon", 4, 8, 6, 25, 0, TYPE_ENNEMIE);
     ajouter_ennemie(&lst_ennemie, "Oryx", 5, 10, 8, 30, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Adolph Hitler", 6, 12, 10, 35, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Staline", 7, 14, 12, 40, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Bernard", 2, 4, 2, 15, 0, TYPE_ENNEMIE);
 
     afficher(lst_ennemie);
 
