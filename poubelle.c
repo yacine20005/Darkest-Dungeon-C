@@ -27,3 +27,11 @@ void afficher_classe(classe *c){
     printf("HPmax : %d\n", c->HPmax);
     printf("Restauration : %d\n", c->rest);
 }
+
+    ajouter_personnage(liste_p, "Gims", liste_c);
+    ajouter_personnage(liste_p, "Kaaris", liste_c);
+    ajouter_personnage(liste_p, "Ninho", liste_c);
+    ajouter_personnage(liste_p, "Nekfeu", liste_c);
+    ajouter_personnage(liste_p, "Damso", liste_c);
+    ajouter_personnage(liste_p, "Orelsan", liste_c);
+    ajouter_personnage(liste_p, "Vald", liste_c);

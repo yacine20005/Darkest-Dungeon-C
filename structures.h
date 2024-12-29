@@ -6,10 +6,10 @@ typedef enum
     type_classe,
     type_personnage,
     type_accessoire,
-    type_ennemie
+    type_ennemi
 } type_struct;
 
-typedef struct
+typedef struct classe
 {
     char nom[20];
     int att;
@@ -19,7 +19,7 @@ typedef struct
     struct classe *suivant;
 } classe, liste_classe;
 
-typedef struct
+typedef struct personnage
 {
     char nom[20];
     classe type;
@@ -29,7 +29,7 @@ typedef struct
     struct personnage *suivant;
 } personnage, liste_personnage;
 
-typedef struct
+typedef struct accessoire
 {
     char nom[20];
     int prix;
@@ -41,7 +41,7 @@ typedef struct
     struct accessoire *suivant;
 } accessoire, liste_accessoire;
 
-typedef struct
+typedef struct ennemie
 {
     char nom[20];
     int niveauenn;
