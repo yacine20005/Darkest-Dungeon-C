@@ -12,6 +12,17 @@ typedef enum { // Permettra de vérifier le type de chaque cellule et de s'adapt
 typedef struct
 {
     char nom[20];
+    int prix;
+    int attbonus;
+    int defbonus;
+    int HPbonus;
+    int heal_bonus;
+    int strred;
+} accessoire;
+
+typedef struct
+{
+    char nom[20];
     int att;
     int def;
     int HPmax;
@@ -28,16 +39,7 @@ typedef struct
     accessoire *accessoire;
 } personnage;
 
-typedef struct
-{
-    char nom[20];
-    int prix;
-    int attbonus;
-    int defbonus;
-    int HPbonus;
-    int heal_bonus;
-    int strred;
-} accessoire;
+
 
 typedef struct
 {

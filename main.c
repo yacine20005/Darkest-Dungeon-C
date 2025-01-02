@@ -3,6 +3,17 @@
 #include <string.h>
 #include "structures.h" //Permet d'importer les structs du fichier structures.h
 
+
+int taille_liste(liste lst)
+{
+    int taille = 0;
+    for(cellule *tmp = lst; tmp; tmp = tmp->suivant, taille++)
+        ;//Boucle vide pour compter le nombre de cellules
+    return taille;
+}
+
+
+
 void afficher(liste lst)
 {
     if (lst) // Si la liste n'est pas vide
@@ -11,55 +22,81 @@ void afficher(liste lst)
         {
         case TYPE_CLASSE: // Si c'est une liste de classe
         {
-            printf("---\n");
-            for (cellule *tmp = lst; tmp; tmp = tmp->suivant) // On parcourt la liste
+            printf("Liste des classes:\n");
+            printf("--------------------------------------------------\n");
+            printf("| Numero | Nom | att | def | HPmax | rest |\n");
+            printf("--------------------------------------------------\n");
+            int num = 0;
+            for (cellule *tmp = lst; tmp; tmp = tmp->suivant, num++) // On parcourt la liste
             {
-                printf("Classe: %s, Attaque: %d, Defense: %d, HP max: %d, Restauration: %d\n",
-                       ((classe *)tmp->valeur)->nom, ((classe *)tmp->valeur)->att, ((classe *)tmp->valeur)->def, ((classe *)tmp->valeur)->HPmax, ((classe *)tmp->valeur)->rest); // On affiche les infos en spécifiant le type de la valeur avant d'accéder aux champs avec ((type *)tmp->valeur)->champ
-                printf("---\n");
+            printf("| %d | %s | %d | %d | %d | %d |\n",
+               num, ((classe *)tmp->valeur)->nom, ((classe *)tmp->valeur)->att, ((classe *)tmp->valeur)->def, ((classe *)tmp->valeur)->HPmax, ((classe *)tmp->valeur)->rest); // On affiche les infos en spécifiant le type de la valeur avant d'accéder aux champs avec ((type *)tmp->valeur)->champ
+            printf("--------------------------------------------------\n");
             }
+            printf("\n");
             break;
         }
 
         case TYPE_PERSONNAGE:
         {
-            printf("---\n");
-            for (cellule *tmp = lst; tmp; tmp = tmp->suivant)
+            printf("Liste des personnages:\n");
+            printf("---------------------------------------------------------------------------------------------------------\n");
+            printf("| Numero | Nom | Classe | Attaque | Defense | HP/HPmax | Restauration | Stress | Nombre de combats |\n");
+            printf("---------------------------------------------------------------------------------------------------------\n");
+            int num = 0;
+            for (cellule *tmp = lst; tmp; tmp = tmp->suivant, num++)
             {
-                printf("Personnage: %s, Classe : %s, Attaque: %d, Defense: %d, HP/HPmax: %d, Restauration : %d, Stress: %d, Nombre de combats: %d\n",
-                       ((personnage *)tmp->valeur)->nom, ((personnage *)tmp->valeur)->classe_perso.nom, ((personnage *)tmp->valeur)->classe_perso.att, ((personnage *)tmp->valeur)->classe_perso.def, ((personnage *)tmp->valeur)->HP, ((personnage *)tmp->valeur)->classe_perso.rest, ((personnage *)tmp->valeur)->stress, ((personnage *)tmp->valeur)->NBcombat);
-                printf("---\n");
+                printf("| %d | %s | %s | %d | %d | %d/%d | %d | %d | %d |\n",
+                       num, ((personnage *)tmp->valeur)->nom, ((personnage *)tmp->valeur)->classe_perso.nom, ((personnage *)tmp->valeur)->classe_perso.att, ((personnage *)tmp->valeur)->classe_perso.def, ((personnage *)tmp->valeur)->HP, ((personnage *)tmp->valeur)->classe_perso.HPmax, ((personnage *)tmp -> valeur)->stress ,((personnage *)tmp->valeur)->stress, ((personnage *)tmp->valeur)->NBcombat);
+                printf("---------------------------------------------------------------------------------------------------------\n");
             }
+            printf("\n");
             break;
         }
 
         case TYPE_ACCESSOIRE:
         {
-            printf("---\n");
-            for (cellule *tmp = lst; tmp; tmp = tmp->suivant)
+            printf("Liste des accessoires:\n");
+            printf("---------------------------------------------------------------------------------------------\n");
+            printf("| Numero | Nom | Prix | Attaque bonus | Defense bonus | HP bonus | Heal bonus | Stress reduit |\n");
+            printf("---------------------------------------------------------------------------------------------\n");
+            int num = 0;
+            for (cellule *tmp = lst; tmp; tmp = tmp->suivant, num++)
             {
-                printf("Accessoire: %s, Prix: %d, Attaque bonus: %d, Defense bonus: %d, HP bonus: %d, Heal bonus: %d, Stress reduit: %d\n",
-                       ((accessoire *)tmp->valeur)->nom, ((accessoire *)tmp->valeur)->prix, ((accessoire *)tmp->valeur)->attbonus, ((accessoire *)tmp->valeur)->defbonus, ((accessoire *)tmp->valeur)->HPbonus, ((accessoire *)tmp->valeur)->heal_bonus, ((accessoire *)tmp->valeur)->strred);
-                printf("---\n");
+                printf("| %d | %s | %d | %d | %d | %d | %d | %d |\n",
+                       num, ((accessoire *)tmp->valeur)->nom, ((accessoire *)tmp->valeur)->prix, ((accessoire *)tmp->valeur)->attbonus, ((accessoire *)tmp->valeur)->defbonus, ((accessoire *)tmp->valeur)->HPbonus, ((accessoire *)tmp->valeur)->heal_bonus, ((accessoire *)tmp->valeur)->strred);
+                printf("---------------------------------------------------------------------------------------------\n");
             }
+            printf("\n");
             break;
         }
 
         case TYPE_ENNEMIE:
         {
-            printf("---\n");
-            for (cellule *tmp = lst; tmp; tmp = tmp->suivant)
+            printf("Liste des ennemies:\n");
+            printf("---------------------------------------------------------------------------------------------\n");
+            printf("| Numero | Nom | Niveau | Attaque | Defense | HP | Attaque stress |\n");
+            printf("---------------------------------------------------------------------------------------------\n");
+            int num = 0;
+            for (cellule *tmp = lst; tmp; tmp = tmp->suivant, num++)
             {
-                printf("Ennemie: %s, Niveau: %d, Attaque: %d, Defense: %d, HP: %d, Attaque stress: %d\n",
-                       ((ennemie *)tmp->valeur)->nom, ((ennemie *)tmp->valeur)->niveau, ((ennemie *)tmp->valeur)->att, ((ennemie *)tmp->valeur)->def, ((ennemie *)tmp->valeur)->HP, ((ennemie *)tmp->valeur)->attstr);
-                printf("---\n");
+                printf("| %d | %s | %d | %d | %d | %d | %d |\n",
+                       num, ((ennemie *)tmp->valeur)->nom, ((ennemie *)tmp->valeur)->niveau, ((ennemie *)tmp->valeur)->att, ((ennemie *)tmp->valeur)->def, ((ennemie *)tmp->valeur)->HP, ((ennemie *)tmp->valeur)->attstr);
+                printf("---------------------------------------------------------------------------------------------\n");
             }
+            printf("\n");
             break;
         }
         default:
             printf("Le type n'est pas reconnu\n");
+            printf("\n");
             break;
         }
+    }
+    else
+    {
+        printf("La liste est vide\n");
+        printf("\n");
     }
 }
 
@@ -216,16 +253,57 @@ cellule* supprimer_num(liste *liste, int num)
     return c;
 }
 
+
+int fin_combat(liste lst_personnage_actif, liste lst_ennemie_actif){
+    if(taille_liste(lst_personnage_actif) == 0)
+    {
+        printf("Vous avez perdu\n");
+        return 1;
+    }
+    if(taille_liste(lst_ennemie_actif) == 0)
+    {
+        printf("Vous avez gagné\n");
+        return 1;
+    }
+    return 0;
+}
+
+
+int fin(liste lst_personnage_actif, int numero_combat)
+{
+    int taille = 0;
+    for(cellule *tmp = lst_personnage_actif; tmp; tmp = tmp->suivant, taille++)
+        ;//Boucle vide pour compter le nombre de cellules
+    if(taille == 0 || numero_combat > 0)
+    {
+        printf("Vous avez perdu\n");
+        return 0;
+    }
+    if(numero_combat > 10)
+    {
+        printf("Vous avez gagné le jeu\n");
+        return 0;
+    }
+    return 1;
+}
+
+
 int main(void)
 {
-
     liste lst_classe = NULL;
     liste lst_personnage = NULL;
     liste lst_personnage_actif = NULL;
-    liste roulotte = NULL; //liste accessoire, on change le nom pour correspondre au sujet.
+    liste roulotte = NULL; //liste accessoire, on change le nom pour correspondre au sujet
+    liste accessoire_actif = NULL;
     liste lst_ennemie = NULL;
+    liste lst_ennemie_actif = NULL;
     liste sanitarium = NULL;
-    liste taverne = NULL;*
+    liste taverne = NULL;
+    int numero_combat = 0;
+    int perso_max = 2;
+    int or = 0;
+
+
 
     ajouter_classe(&lst_classe, "Furie", 13, 0, 20, 0, TYPE_CLASSE);
     ajouter_classe(&lst_classe, "Vestale", 3, 0, 20, 10, TYPE_CLASSE);
@@ -250,19 +328,82 @@ int main(void)
     ajouter_accessoire(&roulotte, "Potion de stress", 10, 0, 0, 0, 0, 5, TYPE_ACCESSOIRE);
     
 
-    ajouter_ennemie(&lst_ennemie, "Goblin", 1, 2, 0, 10, 0, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Minotaure", 2, 4, 2, 15, 0, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Serviteur", 3, 6, 4, 20, 0, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Athéon", 4, 8, 6, 25, 0, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Oryx", 5, 10, 8, 30, 0, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Adolph Hitler", 6, 12, 10, 35, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Patient 13", 10, 20, 18, 75, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Mamadou", 9, 18, 16, 60, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Bernard", 8, 16, 14, 55, 0, TYPE_ENNEMIE);
     ajouter_ennemie(&lst_ennemie, "Staline", 7, 14, 12, 40, 0, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Bernard", 2, 4, 2, 15, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Adolph Hitler", 6, 12, 10, 35, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Oryx", 5, 10, 8, 30, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Athéon", 4, 8, 6, 25, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Priscillia", 3, 6, 4, 20, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Minotaure", 2, 4, 2, 15, 0, TYPE_ENNEMIE);
+    ajouter_ennemie(&lst_ennemie, "Goblin", 1, 2, 0, 10, 0, TYPE_ENNEMIE);
 
-    afficher(lst_personnage);
-    ajouter_cellule(&lst_personnage_actif, supprimer_num(&lst_personnage, 2)); //On supprime le 3ème personnage et on l'ajoute à la liste des personnages actifs
-    afficher(lst_personnage_actif);
-    afficher(lst_personnage);
+    
 
+    while(numero_combat < 10){
+        printf("Combat numero %d\n", numero_combat);
+        for(int num = 0; num < perso_max; num++){
+            printf("Voici les personnages disponible:\n");
+            afficher(lst_personnage);
+            printf("Voici les personnages actifs:\n");
+            afficher(lst_personnage_actif);
+            char choix[10];
+            printf("Choix du personnage numero %d (ou 'N' pour ne pas choisir) : ", num);
+            scanf("%s", choix);
+            printf("\n");
+            if (choix[0] == 'N' || choix[0] == 'n') {
+                continue;
+            }
+            int choix_num = atoi(choix);
+            if (choix_num < 0 || choix_num >= taille_liste(lst_personnage)) {
+                printf("Le choix est invalide\n");
+                num--;
+                continue;
+            }
+            ajouter_cellule(&lst_personnage_actif, supprimer_num(&lst_personnage,  choix_num));
+        }
+        printf("Voici les accessoires disponibles:\n");
+        afficher(roulotte);
+        printf("Vous avez %d or\n", or);
+        char choix[1];
+        printf("Quelle accessoire voulez vous achetez (Q pour quitter : ");
+        scanf("%s", choix);
+        while(choix[0] != 'Q' && choix[0] != 'q'){
+            int choix_num = atoi(choix);
+            if (choix_num < 0 || choix_num >= taille_liste(roulotte))
+            {
+                printf("Le choix est invalide\n");
+            }
+            else
+            {
+                ajouter_cellule(&accessoire_actif, supprimer_num(&roulotte, choix_num));
+                or -= ((accessoire *)accessoire_actif->valeur)->prix;
+            }
+            printf("Voici les accessoires disponibles:\n");
+            afficher(roulotte);
+            printf("Vous avez %d or\n", or);
+            printf("Quelle accessoire voulez vous achetez (Q pour quitter : ");
+            scanf("%s", choix);
+        }
+        printf("le combat commence\n \n");
+        ajouter_cellule(&lst_ennemie_actif, supprimer_num(&lst_ennemie, 0));
+        afficher(lst_ennemie_actif);
+        while(!(fin_combat(lst_personnage_actif, lst_ennemie_actif))){
+            printf("Voici vos personnages :\n");
+            afficher(lst_personnage_actif);
+            printf("Voici vos ennemies :\n");
+            afficher(lst_ennemie_actif);
+            printf("Que voulez vous faire ?\n");
+            printf("1. Attaquer \n");
+            printf("2. Defendre \n");
+            printf("3. Restorer \n");
+            int choix;
+            scanf("%s", choix);
+            exit(0);
+        }
+        or += 10;
+        numero_combat++;
+    }
     return 0;
 }
