@@ -9,6 +9,16 @@ typedef enum { // Permettra de vérifier le type de chaque cellule et de s'adapt
     TYPE_ENNEMIE
 } type;
 
+typedef enum
+{
+    ATTAQUER,
+    DEFENDRE,
+    RESTORER,
+    MORT, // plus de PV DONC MORT
+    INUTILISABLE // PLUS DE 100 de stress donc inutilisable
+
+}status;
+
 typedef struct
 {
     char nom[20];
@@ -37,6 +47,8 @@ typedef struct
     int stress;
     int NBcombat;
     accessoire *accessoire;
+    status status;
+
 } personnage;
 
 
