@@ -26,7 +26,7 @@ void afficher(liste lst)
             printf("---\n");
             for (cellule *tmp = lst; tmp; tmp = tmp->suivant)
             {
-                printf("Personnage: %s, Classe : %s, Attaque: %d, Defense: %d, HP: %d, Restauration : %d, Stress: %d, Nombre de combats: %d\n",
+                printf("Personnage: %s, Classe : %s, Attaque: %d, Defense: %d, HP/HPmax: %d, Restauration : %d, Stress: %d, Nombre de combats: %d\n",
                        ((personnage *)tmp->valeur)->nom, ((personnage *)tmp->valeur)->classe_perso.nom, ((personnage *)tmp->valeur)->classe_perso.att, ((personnage *)tmp->valeur)->classe_perso.def, ((personnage *)tmp->valeur)->HP, ((personnage *)tmp->valeur)->classe_perso.rest, ((personnage *)tmp->valeur)->stress, ((personnage *)tmp->valeur)->NBcombat);
                 printf("---\n");
             }
@@ -110,6 +110,7 @@ void ajouter_personnage(liste *lst_personnage, liste *lst_classe, const char *no
         p->HP = p->classe_perso.HPmax;
         p->stress = 0;
         p->NBcombat = 0;
+        p->accessoire = NULL;
         new_cellule->valeur = p;                // On met la classe dans la cellule
         new_cellule->type = type;               // On met le type dans la cellule
         new_cellule->suivant = *lst_personnage; // On met la cellule en tete de liste
@@ -166,38 +167,88 @@ void ajouter_ennemie(liste *lst_ennemie, const char *nom, int niveau, int att, i
     *lst_ennemie = new_cellule;          // On met la nouvelle liste en tete de liste
 }
 
+void ajouter_cellule(liste *liste, cellule *c)
+{
+    if (!(*liste))
+    {
+        *liste = c;
+        return;
+    }
+    cellule *tmp = *liste;
+    for (; tmp->suivant; tmp = tmp->suivant)
+        ;//Boucle vide pour se placer sur la dernière cellule
+    tmp->suivant = c;
+}
+
+cellule* supprimer_num(liste *liste, int num)
+{
+    if (!(*liste))
+    {
+        return 0;
+    }
+    int taille = 0;
+    for(cellule *tmp = *liste; tmp; tmp = tmp->suivant, taille++)
+        ;//Boucle vide pour compter le nombre de cellules
+    if (num < 0 || num >= taille)
+    {
+        printf("Le numero est invalide\n");
+        return 0;
+    }
+    if (num == 0) //Si on veut supprimer la première cellule
+    {
+        cellule *c = *liste;
+        *liste = c->suivant;
+        c ->suivant = NULL;
+        return c;
+    }
+    cellule *tmp = *liste;
+    for(int i = 0; i < num - 1; i++, tmp = tmp->suivant)
+        ;//Boucle vide pour se placer sur la cellule précédant celle à supprimer
+        
+    cellule *c = tmp -> suivant; //On récupère la cellule à supprimer
+    if(!(c -> suivant)) //Si c'est la dernière cellule
+    {
+        tmp -> suivant = NULL;
+        return c;
+    }
+    tmp -> suivant = c -> suivant;
+    c -> suivant = NULL;
+    return c;
+}
+
 int main(void)
 {
 
-    liste lst_classe;
-    liste lst_personnage;
-    liste lst_accessoire;
-    liste lst_ennemie;
+    liste lst_classe = NULL;
+    liste lst_personnage = NULL;
+    liste lst_personnage_actif = NULL;
+    liste roulotte = NULL; //liste accessoire, on change le nom pour correspondre au sujet.
+    liste lst_ennemie = NULL;
+    liste sanitarium = NULL;
+    liste taverne = NULL;*
 
     ajouter_classe(&lst_classe, "Furie", 13, 0, 20, 0, TYPE_CLASSE);
     ajouter_classe(&lst_classe, "Vestale", 3, 0, 20, 10, TYPE_CLASSE);
     ajouter_classe(&lst_classe, "Chasseur de primes", 7, 3, 25, 3, TYPE_CLASSE);
     ajouter_classe(&lst_classe, "Maitre chien", 10, 6, 17, 5, TYPE_CLASSE);
-    ajouter_classe(&lst_classe, "Chien", 5, 2, 10, 0, TYPE_CLASSE);
-    ajouter_classe(&lst_classe, "Terroriste", 15, 0, 20, 0, TYPE_CLASSE);
-    ajouter_classe(&lst_classe, "ADC", 20, 0, 20, 0, TYPE_CLASSE);
-    ajouter_classe(&lst_classe, "Support", 5, 12, 20, 10, TYPE_CLASSE);
+
 
     ajouter_personnage(&lst_personnage, &lst_classe, "Kaaris", "Furie", TYPE_PERSONNAGE);
     ajouter_personnage(&lst_personnage, &lst_classe, "Damso", "Vestale", TYPE_PERSONNAGE);
     ajouter_personnage(&lst_personnage, &lst_classe, "Nekfeu", "Chasseur de primes", TYPE_PERSONNAGE);
     ajouter_personnage(&lst_personnage, &lst_classe, "Gims", "Maitre chien", TYPE_PERSONNAGE);
     ajouter_personnage(&lst_personnage, &lst_classe, "Sammy", "Maitre chien", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Scooby-doo", "Chien", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Maissa Ben Hamouda", "Terroriste", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Maxime", "ADC", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Esteban", "Support", TYPE_PERSONNAGE);
+    ajouter_personnage(&lst_personnage, &lst_classe, "Scooby-doo", "Vestale", TYPE_PERSONNAGE);
+    ajouter_personnage(&lst_personnage, &lst_classe, "Maissa Ben Hamouda", "Furie", TYPE_PERSONNAGE);
+    ajouter_personnage(&lst_personnage, &lst_classe, "Maitre Yoda", "Chasseur de primes", TYPE_PERSONNAGE);
 
 
 
-    ajouter_accessoire(&lst_accessoire, "Bouclier", 10, 0, 5, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&lst_accessoire, "Epee", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&lst_accessoire, "Potion", 5, 0, 0, 0, 5, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Bouclier", 10, 0, 5, 0, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Epee", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Potion de soin", 10, 0, 0, 0, 5, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Potion de stress", 10, 0, 0, 0, 0, 5, TYPE_ACCESSOIRE);
+    
 
     ajouter_ennemie(&lst_ennemie, "Goblin", 1, 2, 0, 10, 0, TYPE_ENNEMIE);
     ajouter_ennemie(&lst_ennemie, "Minotaure", 2, 4, 2, 15, 0, TYPE_ENNEMIE);
@@ -208,7 +259,10 @@ int main(void)
     ajouter_ennemie(&lst_ennemie, "Staline", 7, 14, 12, 40, 0, TYPE_ENNEMIE);
     ajouter_ennemie(&lst_ennemie, "Bernard", 2, 4, 2, 15, 0, TYPE_ENNEMIE);
 
-    afficher(lst_ennemie);
+    afficher(lst_personnage);
+    ajouter_cellule(&lst_personnage_actif, supprimer_num(&lst_personnage, 2)); //On supprime le 3ème personnage et on l'ajoute à la liste des personnages actifs
+    afficher(lst_personnage_actif);
+    afficher(lst_personnage);
 
     return 0;
 }

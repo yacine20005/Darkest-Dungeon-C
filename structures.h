@@ -25,6 +25,7 @@ typedef struct
     int HP;
     int stress;
     int NBcombat;
+    accessoire *accessoire;
 } personnage;
 
 typedef struct
