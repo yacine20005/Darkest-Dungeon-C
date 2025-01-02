@@ -41,15 +41,16 @@ void afficher(liste lst)
         case TYPE_PERSONNAGE:
         {
             printf("Liste des personnages:\n");
-            printf("---------------------------------------------------------------------------------------------------------\n");
-            printf("| Numero | Nom | Classe | Attaque | Defense | HP/HPmax | Restauration | Stress | Nombre de combats |\n");
-            printf("---------------------------------------------------------------------------------------------------------\n");
+            printf("-----------------------------------------------------------------------------------------------------------------------------\n");
+            printf("| Numero | Nom | Classe | Attaque | Defense | HP/HPmax | Restauration | Stress | Nombre de combats | Accessoire |\n");
+            printf("-----------------------------------------------------------------------------------------------------------------------------\n");
             int num = 0;
             for (cellule *tmp = lst; tmp; tmp = tmp->suivant, num++)
             {
-                printf("| %d | %s | %s | %d | %d | %d/%d | %d | %d | %d |\n",
-                       num, ((personnage *)tmp->valeur)->nom, ((personnage *)tmp->valeur)->classe_perso.nom, ((personnage *)tmp->valeur)->classe_perso.att, ((personnage *)tmp->valeur)->classe_perso.def, ((personnage *)tmp->valeur)->HP, ((personnage *)tmp->valeur)->classe_perso.HPmax, ((personnage *)tmp -> valeur)->stress ,((personnage *)tmp->valeur)->stress, ((personnage *)tmp->valeur)->NBcombat);
-                printf("---------------------------------------------------------------------------------------------------------\n");
+                personnage *perso = (personnage *)tmp->valeur;
+                printf("| %d | %s | %s | %d | %d | %d/%d | %d | %d | %d | %s |\n",
+                       num, perso->nom, perso->classe_perso.nom, perso->classe_perso.att, perso->classe_perso.def, perso->HP, perso->classe_perso.HPmax, perso->classe_perso.rest, perso->stress, perso->NBcombat, perso->accessoire ? ((accessoire *)perso->accessoire)->nom : "Aucun");
+                printf("-----------------------------------------------------------------------------------------------------------------------------\n");
             }
             printf("\n");
             break;
@@ -354,7 +355,7 @@ int main(void)
     liste lst_personnage = NULL;
     liste lst_personnage_actif = NULL;
     liste roulotte = NULL; //liste accessoire, on change le nom pour correspondre au sujet
-    liste accessoire_actif = NULL;
+    liste accessoire_acquis = NULL;
     liste lst_ennemie = NULL;
     liste lst_ennemie_actif = NULL;
     liste sanitarium = NULL;
@@ -440,8 +441,8 @@ int main(void)
             }
             else
             {
-                ajouter_cellule(&accessoire_actif, supprimer_num(&roulotte, choix_num));
-                or -= ((accessoire *)accessoire_actif->valeur)->prix;
+                ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, choix_num));
+                or -= ((accessoire *)accessoire_acquis->valeur)->prix;
             }
             printf("Voici les accessoires disponibles:\n");
             afficher(roulotte);
@@ -449,6 +450,19 @@ int main(void)
             printf("Quelle accessoire voulez vous achetez (Q pour quitter : ");
             scanf("%s", choix);
         }
+        printf("Voici les accessoires acquis:\n");
+        afficher(accessoire_acquis);
+        for(cellule *tmp = lst_personnage_actif; tmp && taille_liste(accessoire_acquis); tmp = tmp->suivant){
+            printf("Quel accessoire voulez vous donner a %s ? : ", ((personnage *)tmp->valeur)->nom);
+            int choix_joueur;
+            scanf("%d", &choix_joueur);
+            while(choix_joueur < 0 || choix_joueur >= taille_liste(accessoire_acquis)){
+                printf("Le choix est invalide\n");
+                printf("Quel accessoire voulez vous donner a %s ? : ", ((personnage *)tmp->valeur)->nom);
+                scanf("%d", &choix_joueur);
+            }
+            ((personnage *)tmp->valeur)->accessoire = (supprimer_num(&accessoire_acquis, choix_joueur)) -> valeur;
+            }
         printf("le combat commence\n \n");
         ajouter_cellule(&lst_ennemie_actif, supprimer_num(&lst_ennemie, 0));
         while(!(fin_combat(lst_personnage_actif, lst_ennemie_actif))){
@@ -515,11 +529,15 @@ int main(void)
 
         int accessoire_choisi = rand() % taille_liste(roulotte);
 
-        ajouter_cellule(&accessoire_actif, supprimer_num(&roulotte, accessoire_choisi));
+        ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, accessoire_choisi));
 
-        afficher(accessoire_actif);
+        afficher(accessoire_acquis);
         for(; lst_personnage_actif; ){
             ((personnage*) lst_personnage_actif -> valeur) -> NBcombat++;
+            if(((personnage*) lst_personnage_actif -> valeur) -> accessoire){
+                //Trouver comment supprimer l'accesoire du personnage, et le rajouter dans
+                // la liste des accessoires acquis
+            }
             ajouter_cellule(&lst_personnage, supprimer_num(&lst_personnage_actif, 0));
         }
         or += 10;
