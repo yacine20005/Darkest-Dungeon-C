@@ -479,16 +479,12 @@ int main(void)
                 else
                 {
                     printf("DEBUG : %d, %d, %d\n", choix_num, ((accessoire *)roulotte->valeur)->prix, or);
-                    for(cellule *tmp = accessoire_acquis; tmp; tmp = tmp->suivant)
-                    {
-                        if(strcmp(((accessoire *)tmp->valeur)->nom, ((accessoire *)roulotte->valeur)->nom) == 0)
-                        {
-                            printf("Vous avez deja cet accessoire\n");
-                            break;
-                            
-                        }
-                    }
-                    if (((accessoire *)roulotte->valeur)->prix > or)
+
+                    cellule *tmp = accessoire_acquis;
+                    int parcours_liste = 0;
+                    for(; choix_num != parcours_liste ; tmp = tmp->suivant, parcours_liste ++)
+                        ; // Boucle vide pour aller sur la cellule rechercher
+                    if (((accessoire *)tmp->valeur)->prix > or)
                     {
                         printf("Vous n'avez pas assez d'or\n");
                         printf("Vous avez %d or\n", or);
