@@ -16,7 +16,6 @@ typedef enum
     RESTORER,
     MORT, // plus de PV DONC MORT
     INUTILISABLE // PLUS DE 100 de stress donc inutilisable
-
 }status;
 
 typedef struct
