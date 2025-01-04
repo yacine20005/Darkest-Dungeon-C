@@ -349,6 +349,26 @@ void restaurer(personnage *perso)
     }
 }
 
+void taverne(liste taverne){
+    for(cellule *tmp = taverne; tmp; tmp = tmp->suivant){
+        ((personnage *)tmp->valeur)->stress -= 25;
+        if(((personnage *)tmp->valeur)->stress < 0){
+            ((personnage *)tmp->valeur)->stress = 0;
+            ((personnage *)tmp->valeur)->status = ATTAQUER;
+        }
+    }
+}
+
+void sanitarium(liste sanitarium){
+    for(cellule *tmp = sanitarium; tmp; tmp = tmp->suivant){
+        ((personnage *)tmp->valeur)->HP += 7;
+        if(((personnage *)tmp->valeur)->HP > ((personnage *)tmp->valeur)->classe_perso.HPmax){
+            ((personnage *)tmp->valeur)->HP = ((personnage *)tmp->valeur)->classe_perso.HPmax;
+        }  
+        }
+    } 
+
+
 int main(void)
 {
     liste lst_classe = NULL;
@@ -413,10 +433,15 @@ int main(void)
             printf("Voici les personnages actifs:\n");
             afficher(lst_personnage_actif);
             char choix[10];
-            printf("Choix du personnage numero %d (ou 'N' pour ne pas choisir) : ", num);
+            printf("Choix du personnage numero %d/%d (ou 'N' pour ne pas choisir) : ", num + 1, perso_max);
             scanf("%s", choix);
             printf("\n");
-            if (choix[0] == 'N' || choix[0] == 'n') {
+            if (choix[0] == 'N' || choix[0] == 'n' && taille_liste(lst_personnage_actif) > 0) {
+                continue;
+            }
+            else if (choix[0] == 'N' || choix[0] == 'n' && taille_liste(lst_personnage_actif) == 0) {
+                printf("Vous devez choisir au moins un personnage\n");
+                num--;
                 continue;
             }
             int choix_num = atoi(choix);
@@ -431,7 +456,7 @@ int main(void)
         afficher(roulotte);
         printf("Vous avez %d or\n", or);
         char choix[1];
-        printf("Quelle accessoire voulez vous achetez (Q pour quitter : ");
+        printf("Quelle accessoire voulez vous achetez (Q pour quitter) : ");
         scanf("%s", choix);
         while(choix[0] != 'Q' && choix[0] != 'q'){
             int choix_num = atoi(choix);
@@ -441,6 +466,13 @@ int main(void)
             }
             else
             {
+                if(((accessoire *)roulotte->valeur)->prix > or){
+                    printf("Vous n'avez pas assez d'or\n");
+                    printf("Vous avez %d or\n", or);
+                    printf("Quelle accessoire voulez vous achetez (Q pour quitter) : ");
+                    scanf("%s", choix);
+                    continue;
+                }
                 ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, choix_num));
                 or -= ((accessoire *)accessoire_acquis->valeur)->prix;
             }
@@ -452,17 +484,24 @@ int main(void)
         }
         printf("Voici les accessoires acquis:\n");
         afficher(accessoire_acquis);
+
+
         for(cellule *tmp = lst_personnage_actif; tmp && taille_liste(accessoire_acquis); tmp = tmp->suivant){
-            printf("Quel accessoire voulez vous donner a %s ? : ", ((personnage *)tmp->valeur)->nom);
-            int choix_joueur;
-            scanf("%d", &choix_joueur);
-            while(choix_joueur < 0 || choix_joueur >= taille_liste(accessoire_acquis)){
+            printf("Quel accessoire voulez vous donner a %s ? : (N pour Aucun)", ((personnage *)tmp->valeur)->nom);
+            char choix_joueur[1];
+            scanf("%s", &choix_joueur);
+            if(choix_joueur[0] == 'N' || choix_joueur[0] == 'n'){
+                continue;
+            }
+            while(atoi(choix_joueur) < 0 || atoi(choix_joueur) >= taille_liste(accessoire_acquis)){
                 printf("Le choix est invalide\n");
                 printf("Quel accessoire voulez vous donner a %s ? : ", ((personnage *)tmp->valeur)->nom);
-                scanf("%d", &choix_joueur);
+                scanf("%s ", &choix_joueur);
             }
-            ((personnage *)tmp->valeur)->accessoire = (supprimer_num(&accessoire_acquis, choix_joueur)) -> valeur;
+            ((personnage *)tmp->valeur)->accessoire = (supprimer_num(&accessoire_acquis, atoi(choix_joueur))) -> valeur;
             }
+
+
         printf("le combat commence\n \n");
         ajouter_cellule(&lst_ennemie_actif, supprimer_num(&lst_ennemie, 0));
         while(!(fin_combat(lst_personnage_actif, lst_ennemie_actif))){
@@ -507,43 +546,126 @@ int main(void)
                 }
             }
             if(((ennemie *)lst_ennemie_actif->valeur)->HP <= 0){
-                supprimer_num(&lst_ennemie_actif, 0);
+                free(supprimer_num(&lst_ennemie_actif, 0));
                 continue;
             }
             printf("Au tour des ennemies\n");
             int att_enemie = rand() % 2;
-            int personnage_choisi = rand() % taille_liste(lst_personnage_actif);
+            int personnage_choisi = (rand() % taille_liste(lst_personnage_actif)) -1;
             liste tmp = lst_personnage_actif;
-            for(int i = 0; i < personnage_choisi - 1; i++){
+            for(int i = 0; i < personnage_choisi; i++){
                 tmp = tmp->suivant;
             }
-            attaque_ennemie(tmp -> suivant -> valeur, lst_ennemie_actif -> valeur , att_enemie);
+            attaque_ennemie(tmp -> valeur, lst_ennemie_actif -> valeur , att_enemie);
         }
         if(fin_combat(lst_personnage_actif, lst_ennemie_actif) == 1){
             printf("Vous avez perdu le combat\n");
             break;
         }
-        else{
         printf("Vous avez gagne le combat\n");
-        printf("Vous  gagne 10 or et un accessoire aleatoire\n");
-
-        int accessoire_choisi = rand() % taille_liste(roulotte);
-
-        ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, accessoire_choisi));
-
-        afficher(accessoire_acquis);
         for(; lst_personnage_actif; ){
             ((personnage*) lst_personnage_actif -> valeur) -> NBcombat++;
             if(((personnage*) lst_personnage_actif -> valeur) -> accessoire){
-                //Trouver comment supprimer l'accesoire du personnage, et le rajouter dans
-                // la liste des accessoires acquis
+
+                ajouter_accessoire(&accessoire_acquis, ((personnage *) lst_personnage_actif -> valeur) -> accessoire -> nom, 
+                    (((personnage *) lst_personnage_actif -> valeur) -> accessoire) -> prix, 
+                    (((personnage *) lst_personnage_actif -> valeur) -> accessoire) -> attbonus, 
+                    (((personnage *) lst_personnage_actif -> valeur) -> accessoire) -> defbonus, 
+                    (((personnage *) lst_personnage_actif -> valeur) -> accessoire) -> HPbonus, 
+                    (((personnage *) lst_personnage_actif -> valeur) -> accessoire) -> heal_bonus, 
+                    (((personnage *) lst_personnage_actif -> valeur) -> accessoire) -> strred, TYPE_ACCESSOIRE);
+                free(((personnage *)lst_personnage_actif -> valeur) -> accessoire); 
+                ((personnage*) lst_personnage_actif -> valeur) -> accessoire = NULL;
             }
             ajouter_cellule(&lst_personnage, supprimer_num(&lst_personnage_actif, 0));
         }
+        printf("Vous avez gagne 10 or\n");
+        printf("Vous avez gagne un accessoire\n");
+        int accessoire_choisi = rand() % taille_liste(roulotte);
+        ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, accessoire_choisi));
+        printf("Voici les accessoires disponibles:\n");
+        afficher(accessoire_acquis);
         or += 10;
         numero_combat++;
+        printf("Fin du combat\n");
+        printf("%d \n", taille_liste(sanitarium));
+        if(taille_liste(sanitarium) > 0){
+            printf("Voici les personnages disponibles pour le sanitarium:\n");
+            afficher(sanitarium);
+            for(liste tmp = sanitarium; tmp; tmp = tmp->suivant){
+                printf("Voulez vous faire sortir %s du sanitarium ? (Y/N) : ", ((personnage *)tmp->valeur)->nom);
+                char choix[1];
+                scanf("%s", choix);
+                if(choix[0] == 'Y' || choix[0] == 'y'){
+                    ajouter_cellule(&lst_personnage, supprimer_num(&sanitarium, 0));
+                }
+            }
         }
+        printf("%d \n", taille_liste(sanitarium));
+        if(taille_liste(sanitarium) < 2) {
+            printf("Vous avez %d place dans le sanitarium, voulez vous faire entrer un personnage ? (Y/N) : ", (2 - taille_liste(sanitarium)));
+            char choix[1];
+            scanf("%s", choix);
+            if(choix[0] == 'Y' || choix[0] == 'y'){
+                printf("Voici les personnages disponibles pour le sanitarium:\n");
+                afficher(lst_personnage);
+                int nb_personnage = 0;
+                do{
+                printf("Combien de personnage voulez vous mettre dans la sanitarium ? : ");
+                scanf("%d", &nb_personnage); } while(nb_personnage > 2 || nb_personnage < 0);
+                for(int i = 0; i < nb_personnage; i++){
+                    printf("Quel personnage voulez vous mettre dans le sanitarium ? : ");
+                    int choix = 0;
+                    scanf("%d", &choix);
+                    if(choix < 0 || choix >= taille_liste(lst_personnage)){
+                        printf("Le choix est invalide\n");
+                        i--;
+                        continue;
+                    }
+                    ajouter_cellule(&sanitarium, supprimer_num(&lst_personnage, choix));
+                }      
+            }
         
+        }
+        if(taille_liste(taverne) > 0){
+            printf("Voici les personnages disponibles pour la taverne:\n");
+            afficher(taverne);
+            for(liste tmp = taverne; tmp; tmp = tmp->suivant){
+                printf("Voulez vous faire sortir %s de la taverne ? (Y/N) : ", ((personnage *)tmp->valeur)->nom);
+                char choix[1];
+                scanf("%s", choix);
+                if(choix[0] == 'Y' || choix[0] == 'y'){
+                    ajouter_cellule(&lst_personnage, supprimer_num(&taverne, 0));
+                }
+             }
+        }
+        if(taille_liste(taverne) < 2) {
+            printf("Vous avez %d place dans la taverne, voulez vous faire entrer un personnage ? (Y/N) : ", 2 - taille_liste(taverne));
+            char choix[1];
+            scanf("%s", choix);
+            if(choix[0] == 'Y' || choix[0] == 'y'){
+                printf("Voici les personnages disponibles pour la taverne:\n");
+                afficher(lst_personnage);
+                int nb_personnage = 0;
+                do{
+                printf("Combien de personnage voulez vous mettre dans la taverne ? : ");
+                scanf("%d", &nb_personnage); } while(nb_personnage > 2 || nb_personnage < 0);
+                for(int i = 0; i < nb_personnage; i++){
+                    printf("Quel personnage voulez vous mettre dans la taverne ? : ");
+                    int choix = 0;
+                    scanf("%d", &choix);
+                    if(choix < 0 || choix >= taille_liste(lst_personnage)){
+                        printf("Le choix est invalide\n");
+                        i--;
+                        continue;
+                    }
+                    ajouter_cellule(&taverne, supprimer_num(&lst_personnage, choix));
+                }
+            }
+        }
     }
     return 0;
 }
+
+
+
