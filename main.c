@@ -20,7 +20,6 @@ void afficher(liste lst)
         {
         case TYPE_CLASSE: // Si c'est une liste de classe
         {
-            printf("Liste des classes:\n");
             printf("--------------------------------------------------\n");
             printf("| Numero | Nom | att | def | HPmax | rest |\n");
             printf("--------------------------------------------------\n");
@@ -37,7 +36,6 @@ void afficher(liste lst)
 
         case TYPE_PERSONNAGE:
         {
-            printf("Liste des personnages:\n");
             printf("-----------------------------------------------------------------------------------------------------------------------------\n");
             printf("| Numero | Nom | Classe | Attaque | Defense | HP/HPmax | Restauration | Stress | Nombre de combats | Accessoire |\n");
             printf("-----------------------------------------------------------------------------------------------------------------------------\n");
@@ -55,7 +53,6 @@ void afficher(liste lst)
 
         case TYPE_ACCESSOIRE:
         {
-            printf("Liste des accessoires:\n");
             printf("---------------------------------------------------------------------------------------------\n");
             printf("| Numero | Nom | Prix | Attaque bonus | Defense bonus | HP bonus | Heal bonus | Stress reduit |\n");
             printf("---------------------------------------------------------------------------------------------\n");
@@ -72,7 +69,6 @@ void afficher(liste lst)
 
         case TYPE_ENNEMIE:
         {
-            printf("Liste des ennemies:\n");
             printf("---------------------------------------------------------------------------------------------\n");
             printf("| Numero | Nom | Niveau | Attaque | Defense | HP | Attaque stress |\n");
             printf("---------------------------------------------------------------------------------------------\n");
@@ -408,10 +404,23 @@ int main(void)
     ajouter_personnage(&lst_personnage, &lst_classe, "Maissa Ben Hamouda", "Furie", TYPE_PERSONNAGE);
     ajouter_personnage(&lst_personnage, &lst_classe, "Maitre Yoda", "Chasseur de primes", TYPE_PERSONNAGE);
 
+    ajouter_accessoire(&roulotte, "Bouclier en bois", 5, 0, 3, 0, 0, 0, TYPE_ACCESSOIRE);
     ajouter_accessoire(&roulotte, "Bouclier", 10, 0, 5, 0, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Bouclier en diamant", 15, 0, 10, 0, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Epee en bois", 10, 3, 0, 0, 0, 0, TYPE_ACCESSOIRE);
     ajouter_accessoire(&roulotte, "Epee", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Epee en diamant", 20, 10, 0, 0, 0, 0, TYPE_ACCESSOIRE);
     ajouter_accessoire(&roulotte, "Potion de soin", 10, 0, 0, 0, 5, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Monster Energy", 15, 0, 0, 0, 10, 0, TYPE_ACCESSOIRE);
     ajouter_accessoire(&roulotte, "Potion de stress", 10, 0, 0, 0, 0, 5, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Red Bull", 15, 0, 0, 0, 0, 10, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Akimbo Saug", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "XM4", 20, 10, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Pointeur C (->)", 50, 25, 10, 0, 0, 100, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "LIB MLV", 50, 0, 100, 0, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Segmentation fault", 50, 0, 0, 100, 0, 0, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Pingouin de Linux (Tux)", 100, 100, 100, 100, 100, 100, TYPE_ACCESSOIRE);
+    ajouter_accessoire(&roulotte, "Honda NSX", 1000, 0, 100, 0, 0, 0, TYPE_ACCESSOIRE);
 
     ajouter_ennemie(&lst_ennemie, "Patient 13", 10, 20, 18, 75, 50, TYPE_ENNEMIE);
     ajouter_ennemie(&lst_ennemie, "Mamadou", 9, 18, 16, 60, 45, TYPE_ENNEMIE);
@@ -453,7 +462,7 @@ int main(void)
                 num--; // On refait le dernier choix
                 continue;
             }
-            int choix_num = atoi(choix); // atoi permet de convertir une chaine de caractère en entier
+            int choix_num = atoi(choix);                                    // atoi permet de convertir une chaine de caractère en entier
             if (choix_num < 0 || choix_num >= taille_liste(lst_personnage)) // Si le numéro de personnage est invalide
             {
                 printf("Le choix est invalide\n");
@@ -464,6 +473,8 @@ int main(void)
         }
         if (numero_combat >= 1) // Permet d'éviter d'afficher la roulotte et de choisir des accessoires au premier combat alors qu'on a pas encore d'or ou gagné de combat
         {
+            printf("Voici les accessoires possédés:\n");
+            afficher(accessoire_acquis);
             printf("Voici les accessoires disponibles:\n");
             afficher(roulotte);
             printf("Vous avez %d or\n", or);
@@ -479,33 +490,34 @@ int main(void)
                 }
                 else
                 {
-                    cellule *tmp = accessoire_acquis;
+                    cellule *tmp = roulotte;
                     int parcours_liste = 0;
                     for (; choix_num != parcours_liste; tmp = tmp->suivant, parcours_liste++)
-                        ; // Boucle vide pour aller sur la cellule rechercher
+                        ;                                       // Boucle vide pour aller sur la cellule rechercher
                     if (((accessoire *)tmp->valeur)->prix > or) // Si le joueur n'a pas assez d'or
                     {
                         printf("Vous n'avez pas assez d'or\n");
                         printf("Vous avez %d or\n", or);
-                        printf("Quelle accessoire voulez vous achetez (Q pour quitter) : ");
-                        scanf("%s", choix); // On redemande un choix
-                        continue;
                     }
-                    ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, choix_num)); // On ajoute l'accessoire acquis à la liste des accessoires acquis
-                    or -= ((accessoire *)accessoire_acquis->valeur)->prix; // On retire le prix de l'accessoire acheté à l'or du joueur
+                    else
+                    {
+                        ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, choix_num)); // On ajoute l'accessoire acquis à la liste des accessoires acquis
+                        or -= ((accessoire *)accessoire_acquis->valeur)->prix;                    // On retire le prix de l'accessoire acheté à l'or du joueur
+                    }
                 }
+                printf("Voici les accessoires possédés:\n");
+                afficher(accessoire_acquis);
                 printf("Voici les accessoires disponibles:\n");
                 afficher(roulotte);
                 printf("Vous avez %d or\n", or);
-                printf("Quelle accessoire voulez vous achetez (Q pour quitter : ");
+                printf("Quelle accessoire voulez vous achetez (Q pour quitter) : ");
                 scanf("%s", choix);
             }
-            printf("Voici les accessoires acquis:\n");
-            afficher(accessoire_acquis);
-
             for (cellule *tmp = lst_personnage_actif; tmp && taille_liste(accessoire_acquis); tmp = tmp->suivant) // On parcourt la liste des personnages actifs
             {
-                printf("Quel accessoire voulez vous donner a %s ? : (N pour Aucun)", ((personnage *)tmp->valeur)->nom);
+                printf("Voici les accessoires acquis:\n");
+                afficher(accessoire_acquis);
+                printf("Quel accessoire voulez vous donner a %s ? : (N pour Aucun) : ", ((personnage *)tmp->valeur)->nom);
                 char choix_joueur[1];
                 scanf("%s", &choix_joueur);
                 if (choix_joueur[0] == 'N' || choix_joueur[0] == 'n')
@@ -523,7 +535,7 @@ int main(void)
         }
         printf("le combat commence\n \n");
         ajouter_cellule(&lst_ennemie_actif, supprimer_num(&lst_ennemie, 0)); // On ajoute le premier ennemie à la liste des ennemies actifs
-        while (!(fin_combat(lst_personnage_actif, lst_ennemie_actif))) // Tant que le combat n'est pas fini
+        while (!(fin_combat(lst_personnage_actif, lst_ennemie_actif)))       // Tant que le combat n'est pas fini
         {
             printf("Voici vos personnages :\n");
             afficher(lst_personnage_actif);
@@ -531,7 +543,6 @@ int main(void)
             afficher(lst_ennemie_actif);
             int nb_personnage = 0;
             for (cellule *tmp = lst_personnage_actif; tmp; tmp = tmp->suivant, nb_personnage++)
-                ; // Boucle vide pour compter le nombre de personnage actif
             {
                 if (((personnage *)tmp->valeur)->status == INUTILISABLE)
                     continue; // Sert à skip le tour du personnage si il est inutilisable
@@ -552,7 +563,7 @@ int main(void)
                     {
                     case 1: // Attaquer
                         printf("%s attaque\n", ((personnage *)tmp->valeur)->nom);
-                        ((personnage *)tmp->valeur)->status = ATTAQUER; // On met le personnage en état d'attaque
+                        ((personnage *)tmp->valeur)->status = ATTAQUER;                                      // On met le personnage en état d'attaque
                         attaque_personnage((personnage *)tmp->valeur, (ennemie *)lst_ennemie_actif->valeur); // On attaque l'ennemie
                         break;
 
@@ -564,7 +575,7 @@ int main(void)
                     default: // Se soigner
                         printf("%s se soigne\n", ((personnage *)tmp->valeur)->nom);
                         ((personnage *)tmp->valeur)->status = RESTORER; // On met le personnage en état de restauration
-                        restaurer((personnage *)tmp->valeur); // On restaure le personnage
+                        restaurer((personnage *)tmp->valeur);           // On restaure le personnage
                         break;
                     }
                 }
@@ -572,10 +583,10 @@ int main(void)
             if (((ennemie *)lst_ennemie_actif->valeur)->HP <= 0) // Si l'ennemie est mort
             {
                 free(supprimer_num(&lst_ennemie_actif, 0)); // On le supprime de la liste des ennemies actifs
-                continue; // Sert à skip le tour des ennemies si l'ennemie est mort
+                continue;                                   // Sert à skip le tour des ennemies si l'ennemie est mort
             }
             printf("Au tour des ennemies\n");
-            int att_enemie = rand() % 2; // Permet de choisir aléatoirement si l'ennemie attaque ou stresse le personnage
+            int att_enemie = rand() % 2;                                           // Permet de choisir aléatoirement si l'ennemie attaque ou stresse le personnage
             int personnage_choisi = (rand() % taille_liste(lst_personnage_actif)); // Permet de choisir aléatoirement le personnage qui va subir l'attaque ou le stress
             liste tmp = lst_personnage_actif;
             for (int i = 0; i < personnage_choisi; i++)
@@ -583,7 +594,7 @@ int main(void)
                 tmp = tmp->suivant; // Permet de se placer sur le personnage choisi aléatoirement par l'ennemie
             }
             attaque_ennemie(tmp->valeur, lst_ennemie_actif->valeur, att_enemie); // On attaque le personnage choisi
-            if (((personnage *)tmp->valeur)->status == MORT) // Si le personnage est mort
+            if (((personnage *)tmp->valeur)->status == MORT)                     // Si le personnage est mort
             {
                 free(supprimer_num(&lst_personnage_actif, personnage_choisi)); // On le supprime de la liste des personnages actifs
             }
@@ -596,7 +607,7 @@ int main(void)
         printf("Vous avez gagne le combat\n");
         for (; lst_personnage_actif;) // On parcourt la liste des personnages actifs
         {
-            ((personnage *)lst_personnage_actif->valeur)->NBcombat++; // On incrémente le nombre de combat du personnage
+            ((personnage *)lst_personnage_actif->valeur)->NBcombat++;     // On incrémente le nombre de combat du personnage
             if (((personnage *)lst_personnage_actif->valeur)->accessoire) // Si le personnage a un accessoire
             {
 
@@ -607,22 +618,22 @@ int main(void)
                                    (((personnage *)lst_personnage_actif->valeur)->accessoire)->HPbonus,
                                    (((personnage *)lst_personnage_actif->valeur)->accessoire)->heal_bonus,
                                    (((personnage *)lst_personnage_actif->valeur)->accessoire)->strred, TYPE_ACCESSOIRE); // Permet de copier l'accessoire dans la liste des accessoires initialement équipé par le personnage dans la liste des accessoires acquis la folie le code de malade
-                free(((personnage *)lst_personnage_actif->valeur)->accessoire); // On libère la mémoire de l'accessoire équipé par le personnage
-                ((personnage *)lst_personnage_actif->valeur)->accessoire = NULL; // Le personnage n'a plus d'accessoire
+                free(((personnage *)lst_personnage_actif->valeur)->accessoire);                                          // On libère la mémoire de l'accessoire équipé par le personnage
+                ((personnage *)lst_personnage_actif->valeur)->accessoire = NULL;                                         // Le personnage n'a plus d'accessoire
             }
             ajouter_cellule(&lst_personnage, supprimer_num(&lst_personnage_actif, 0)); // On remet le personnage dans la liste des personnages non actifs
         }
         printf("Vous avez gagne 10 or\n");
         or += 10; // On gagne 10 or à la fin du combat
         printf("Vous avez gagne un accessoire\n");
-        int accessoire_choisi = rand() % taille_liste(roulotte); // Permet de choisir aléatoirement un accessoire pour avoir gagngé le combat
+        int accessoire_choisi = rand() % taille_liste(roulotte);                          // Permet de choisir aléatoirement un accessoire pour avoir gagngé le combat
         ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, accessoire_choisi)); // On ajoute l'accessoire à la liste des accessoires acquis
         printf("Voici les accessoires disponibles:\n");
         afficher(accessoire_acquis);
-        numero_combat++;// On incrémente le niveau de combat
+        numero_combat++; // On incrémente le niveau de combat
         printf("Fin du combat\n");
-        sanitarium(lst_sanitarium); // On soigne les personnages du sanitarium
-        taverne(lst_taverne); // On diminue le stress des personnages de la taverne
+        sanitarium(lst_sanitarium);           // On soigne les personnages du sanitarium
+        taverne(lst_taverne);                 // On diminue le stress des personnages de la taverne
         if (taille_liste(lst_sanitarium) > 0) // Si il y a des personnages dans le sanitarium
         {
             printf("Voici les personnages disponibles pour le sanitarium:\n");
@@ -655,9 +666,11 @@ int main(void)
                 } while (nb_personnage > 2 || nb_personnage < 0); // Tant que le nombre de personnage est invalide
                 for (int i = 0; i < nb_personnage; i++)
                 {
+                    printf("Voici les personnages disponibles pour le sanitarium:\n");
+                    afficher(lst_personnage);
                     printf("Quel personnage voulez vous mettre dans le sanitarium ? : ");
                     int choix = 0;
-                    scanf("%d", &choix); // On demande quel personnage le joueur veut mettre dans le sanitarium
+                    scanf("%d", &choix);                                    // On demande quel personnage le joueur veut mettre dans le sanitarium
                     if (choix < 0 || choix >= taille_liste(lst_personnage)) // Si le numéro de personnage est invalide
                     {
                         printf("Le choix est invalide\n");
@@ -700,9 +713,11 @@ int main(void)
                 } while (nb_personnage > 2 || nb_personnage < 0); // Tant que le nombre de personnage est invalide
                 for (int i = 0; i < nb_personnage; i++)
                 {
+                    printf("Voici les personnages disponibles pour la taverne:\n");
+                    afficher(lst_personnage);
                     printf("Quel personnage voulez vous mettre dans la taverne ? : ");
                     int choix = 0;
-                    scanf("%d", &choix); // On demande quel personnage le joueur veut mettre dans la taverne
+                    scanf("%d", &choix);                                    // On demande quel personnage le joueur veut mettre dans la taverne
                     if (choix < 0 || choix >= taille_liste(lst_personnage)) // Si le numéro de personnage est invalide
                     {
                         printf("Le choix est invalide\n");
