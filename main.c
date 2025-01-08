@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "structures.h" //Permet d'importer les structs du fichier structures.h
 #include <time.h>
+#include "structures.h" //Permet d'importer les structs du fichier structures.h
 
 int taille_liste(liste lst)
 {
@@ -118,6 +118,7 @@ void ajouter_classe(liste *lst_classe, const char *nom, int att, int def, int hp
 
 void ajouter_personnage(liste *lst_personnage, liste *lst_classe, const char *nom_perso, const char *nom_classe, type type)
 {
+    printf("Ajout du personnage %s de la classe %s\n", nom_perso, nom_classe);
     personnage *p = (personnage *)malloc(sizeof(personnage));  // Allocation de la mémoire pour la classe en elle meme
     cellule *new_cellule = (cellule *)malloc(sizeof(cellule)); // Allocation de la mémoire pour la nouvelle cellule de la liste
     int classe_trouve = 0;
@@ -374,6 +375,86 @@ void sanitarium(liste sanitarium)
     }
 }
 
+void lire_csv_accessoire(liste *lst_accessoire)
+{
+    FILE *fichier = fopen("accessoire.csv", "r"); // On ouvre le fichier en lecture
+    if (!fichier)                                 // Si le fichier n'a pas pu être ouvert
+    {
+        printf("Erreur lors de l'ouverture du fichier\n");
+        return;
+    }
+    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    fgets(ligne, sizeof(ligne), fichier);        // On ignore la première ligne car c'est les noms des colonnes
+    while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
+    {
+        char nom[50]; // On crée un tableau de caractère pour stocker le nom
+        int prix, attbonus, defbonus, hpbonus, heal_bonus, strred;
+        sscanf(ligne, "%[^,],%d,%d,%d,%d,%d,%d", nom, &prix, &attbonus, &defbonus, &hpbonus, &heal_bonus, &strred);      // On utilise sscanf pour lire les valeurs et le %[[^,]] permet de lire une chaine de caractère jusqu'à la virgule, on accède au nom sans & car c'est déjà un pointeur j'ai bloqué sur ca pdt 20min je suis accablé
+        ajouter_accessoire(lst_accessoire, nom, prix, attbonus, defbonus, hpbonus, heal_bonus, strred, TYPE_ACCESSOIRE); // On ajoute l'accessoire à la liste
+    }
+    fclose(fichier); // On ferme le fichier
+}
+
+void lire_csv_classe(liste *lst_classe)
+{
+    FILE *fichier = fopen("classe.csv", "r"); // On ouvre le fichier en lecture
+    if (!fichier)                             // Si le fichier n'a pas pu être ouvert
+    {
+        printf("Erreur lors de l'ouverture du fichier\n");
+        return;
+    }
+    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    fgets(ligne, sizeof(ligne), fichier);        // On ignore la première ligne car c'est les noms des colonnes
+    while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
+    {
+        char nom[50]; // On crée un tableau de caractère pour stocker le nom
+        int att, def, hpmax, rest;
+        sscanf(ligne, "%[^,],%d,%d,%d,%d", nom, &att, &def, &hpmax, &rest);  // On utilise sscanf pour lire les valeurs
+        ajouter_classe(lst_classe, nom, att, def, hpmax, rest, TYPE_CLASSE); // On ajoute la classe à la liste
+    }
+    fclose(fichier); // On ferme le fichier
+}
+
+void lire_csv_ennemi(liste *lst_ennemi)
+{
+    FILE *fichier = fopen("ennemi.csv", "r"); // On ouvre le fichier en lecture
+    if (!fichier)                             // Si le fichier n'a pas pu être ouvert
+    {
+        printf("Erreur lors de l'ouverture du fichier\n");
+        return;
+    }
+    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    fgets(ligne, sizeof(ligne), fichier);        // On ignore la première ligne car c'est les noms des colonnes
+    while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
+    {
+        char nom[50]; // On crée un tableau de caractère pour stocker le nom
+        int niveau, att, def, hp, attstr;
+        sscanf(ligne, "%[^,],%d,%d,%d,%d,%d", nom, &niveau, &att, &def, &hp, &attstr); // On utilise sscanf pour lire les valeurs
+        ajouter_ennemie(lst_ennemi, nom, niveau, att, def, hp, attstr, TYPE_ENNEMIE);  // On ajoute l'ennemie à la liste
+    }
+    fclose(fichier); // On ferme le fichier
+}
+
+void lire_csv_personnage(liste *lst_personnage, liste *lst_classe)
+{
+    FILE *fichier = fopen("personnage.csv", "r"); // On ouvre le fichier en lecture
+    if (!fichier)                                 // Si le fichier n'a pas pu être ouvert
+    {
+        printf("Erreur lors de l'ouverture du fichier\n");
+        return;
+    }
+    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    fgets(ligne, sizeof(ligne), fichier);        // On ignore la première ligne car c'est les noms des colonnes
+    while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
+    {
+        char nom[50], nom_classe[50]; // On crée un tableau de caractère pour stocker le nom
+        int HP, stress, NBcombat;
+        sscanf(ligne, "%[^,],%[^,\n]", nom, nom_classe);                                    // On utilise sscanf pour lire les valeurs
+        ajouter_personnage(lst_personnage, lst_classe, nom, nom_classe, TYPE_PERSONNAGE); // On ajoute le personnage à la liste
+    }
+    fclose(fichier); // On ferme le fichier
+}
+
 int main(void)
 {
     liste lst_classe = NULL;
@@ -390,48 +471,10 @@ int main(void)
     int perso_max = 1;
     int or = 0;
 
-    ajouter_classe(&lst_classe, "Furie", 13, 0, 20, 0, TYPE_CLASSE);
-    ajouter_classe(&lst_classe, "Vestale", 3, 0, 20, 10, TYPE_CLASSE);
-    ajouter_classe(&lst_classe, "Chasseur de primes", 7, 3, 25, 3, TYPE_CLASSE);
-    ajouter_classe(&lst_classe, "Maitre chien", 10, 6, 17, 5, TYPE_CLASSE);
-
-    ajouter_personnage(&lst_personnage, &lst_classe, "Kaaris", "Furie", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Damso", "Vestale", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Nekfeu", "Chasseur de primes", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Gims", "Maitre chien", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Sammy", "Maitre chien", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Scooby-doo", "Vestale", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Maissa Ben Hamouda", "Furie", TYPE_PERSONNAGE);
-    ajouter_personnage(&lst_personnage, &lst_classe, "Maitre Yoda", "Chasseur de primes", TYPE_PERSONNAGE);
-
-    ajouter_accessoire(&roulotte, "Bouclier en bois", 5, 0, 3, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Bouclier", 10, 0, 5, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Bouclier en diamant", 15, 0, 10, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Epee en bois", 10, 3, 0, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Epee", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Epee en diamant", 20, 10, 0, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Potion de soin", 10, 0, 0, 0, 5, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Monster Energy", 15, 0, 0, 0, 10, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Potion de stress", 10, 0, 0, 0, 0, 5, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Red Bull", 15, 0, 0, 0, 0, 10, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Akimbo Saug", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "XM4", 20, 10, 0, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Pointeur C (->)", 50, 25, 10, 0, 0, 100, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "LIB MLV", 50, 0, 100, 0, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Segmentation fault", 50, 0, 0, 100, 0, 0, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Pingouin de Linux (Tux)", 100, 100, 100, 100, 100, 100, TYPE_ACCESSOIRE);
-    ajouter_accessoire(&roulotte, "Honda NSX", 1000, 0, 100, 0, 0, 0, TYPE_ACCESSOIRE);
-
-    ajouter_ennemie(&lst_ennemie, "Patient 13", 10, 20, 18, 75, 50, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Mamadou", 9, 18, 16, 60, 45, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Bernard", 8, 16, 14, 55, 40, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Staline", 7, 14, 12, 40, 35, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Adolph Hitler", 6, 12, 10, 35, 30, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Oryx", 5, 10, 8, 30, 25, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Athéon", 4, 8, 6, 25, 20, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Priscillia", 3, 6, 4, 20, 15, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Minotaure", 2, 4, 2, 15, 10, TYPE_ENNEMIE);
-    ajouter_ennemie(&lst_ennemie, "Goblin", 1, 2, 0, 10, 5, TYPE_ENNEMIE);
+    lire_csv_classe(&lst_classe);
+    lire_csv_personnage(&lst_personnage, &lst_classe);
+    lire_csv_accessoire(&roulotte);
+    lire_csv_ennemi(&lst_ennemie);
 
     srand(time(NULL)); // Initialisation de la seed pour la génération de nombre aléatoire
 

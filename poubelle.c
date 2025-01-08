@@ -1,35 +1,42 @@
-/* Page 2 du PDF : 
-"On imp ose les 4 classes suivantes. Vous p ourrez changer les valeurs des attributs p our tester
-et adapter le niveau de difficultée du jeu aux ennemis que vous aurez créés."
-*/
+ajouter_classe(&lst_classe, "Furie", 13, 0, 20, 0, TYPE_CLASSE);
+ajouter_classe(&lst_classe, "Vestale", 3, 0, 20, 10, TYPE_CLASSE);
+ajouter_classe(&lst_classe, "Chasseur de primes", 7, 3, 25, 3, TYPE_CLASSE);
+ajouter_classe(&lst_classe, "Maitre chien", 10, 6, 17, 5, TYPE_CLASSE);
 
+ajouter_personnage(&lst_personnage, &lst_classe, "Kaaris", "Furie", TYPE_PERSONNAGE);
+ajouter_personnage(&lst_personnage, &lst_classe, "Damso", "Vestale", TYPE_PERSONNAGE);
+ajouter_personnage(&lst_personnage, &lst_classe, "Nekfeu", "Chasseur de primes", TYPE_PERSONNAGE);
+ajouter_personnage(&lst_personnage, &lst_classe, "Gims", "Maitre chien", TYPE_PERSONNAGE);
+ajouter_personnage(&lst_personnage, &lst_classe, "Sammy", "Maitre chien", TYPE_PERSONNAGE);
+ajouter_personnage(&lst_personnage, &lst_classe, "Scooby-doo", "Vestale", TYPE_PERSONNAGE);
+ajouter_personnage(&lst_personnage, &lst_classe, "Maissa Ben Hamouda", "Furie", TYPE_PERSONNAGE);
+ajouter_personnage(&lst_personnage, &lst_classe, "Maitre Yoda", "Chasseur de primes", TYPE_PERSONNAGE);
 
-ajouter_classe(&lst_classe, "Chien", 5, 2, 10, 0, TYPE_CLASSE);
-ajouter_classe(&lst_classe, "Terroriste", 15, 0, 20, 0, TYPE_CLASSE);
-ajouter_classe(&lst_classe, "ADC", 20, 0, 20, 0, TYPE_CLASSE);
-ajouter_classe(&lst_classe, "Support", 5, 12, 20, 10, TYPE_CLASSE);
+ajouter_accessoire(&roulotte, "Bouclier en bois", 5, 0, 3, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Bouclier", 10, 0, 5, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Bouclier en diamant", 15, 0, 10, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Epee en bois", 10, 3, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Epee", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Epee en diamant", 20, 10, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Potion de soin", 10, 0, 0, 0, 5, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Monster Energy", 15, 0, 0, 0, 10, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Potion de stress", 10, 0, 0, 0, 0, 5, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Red Bull", 15, 0, 0, 0, 0, 10, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Akimbo Saug", 15, 5, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "XM4", 20, 10, 0, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Pointeur C (->)", 50, 25, 10, 0, 0, 100, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "LIB MLV", 50, 0, 100, 0, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Segmentation fault", 50, 0, 0, 100, 0, 0, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Pingouin de Linux (Tux)", 100, 100, 100, 100, 100, 100, TYPE_ACCESSOIRE);
+ajouter_accessoire(&roulotte, "Honda NSX", 1000, 0, 100, 0, 0, 0, TYPE_ACCESSOIRE);
 
-
-ajouter_personnage(&lst_personnage, &lst_classe, "Maxime", "ADC", TYPE_PERSONNAGE);
-ajouter_personnage(&lst_personnage, &lst_classe, "Esteban", "Support", TYPE_PERSONNAGE);
-
-
-
-
-int fin(liste lst_personnage_actif, int numero_combat)
-{
-    int taille = 0;
-    for(cellule *tmp = lst_personnage_actif; tmp; tmp = tmp->suivant, taille++)
-        ;//Boucle vide pour compter le nombre de cellules
-    if(taille == 0 || numero_combat > 0)
-    {
-        printf("Vous avez perdu\n");
-        return 0;
-    }
-    if(numero_combat > 10)
-    {
-        printf("Vous avez gagné le jeu\n");
-        return 0;
-    }
-    return 1;
-}
+ajouter_ennemie(&lst_ennemie, "Patient 13", 10, 20, 18, 75, 50, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "GitHub Copilot", 9, 18, 16, 60, 45, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "Bernard", 8, 16, 14, 55, 40, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "Panos", 7, 14, 12, 40, 35, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "Batman", 6, 12, 10, 35, 30, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "Oryx", 5, 10, 8, 30, 25, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "Athéon", 4, 8, 6, 25, 20, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "Priscillia", 3, 6, 4, 20, 15, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "Minotaure", 2, 4, 2, 15, 10, TYPE_ENNEMIE);
+ajouter_ennemie(&lst_ennemie, "Goblin", 1, 2, 0, 10, 5, TYPE_ENNEMIE);
