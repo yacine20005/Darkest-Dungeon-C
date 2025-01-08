@@ -118,7 +118,6 @@ void ajouter_classe(liste *lst_classe, const char *nom, int att, int def, int hp
 
 void ajouter_personnage(liste *lst_personnage, liste *lst_classe, const char *nom_perso, const char *nom_classe, type type)
 {
-    printf("Ajout du personnage %s de la classe %s\n", nom_perso, nom_classe);
     personnage *p = (personnage *)malloc(sizeof(personnage));  // Allocation de la mémoire pour la classe en elle meme
     cellule *new_cellule = (cellule *)malloc(sizeof(cellule)); // Allocation de la mémoire pour la nouvelle cellule de la liste
     int classe_trouve = 0;
@@ -449,14 +448,106 @@ void lire_csv_personnage(liste *lst_personnage, liste *lst_classe)
     {
         char nom[50], nom_classe[50]; // On crée un tableau de caractère pour stocker le nom
         int HP, stress, NBcombat;
-        sscanf(ligne, "%[^,],%[^,\n]", nom, nom_classe);                                    // On utilise sscanf pour lire les valeurs
+        sscanf(ligne, "%[^,],%[^,\n]", nom, nom_classe);                                  // On utilise sscanf pour lire les valeurs
         ajouter_personnage(lst_personnage, lst_classe, nom, nom_classe, TYPE_PERSONNAGE); // On ajoute le personnage à la liste
     }
     fclose(fichier); // On ferme le fichier
 }
 
+const char* status_to_string(status status) // Fonction pour convertir un status en chaine de caractère pour la sauvagarde 
+{
+    switch (status)
+    {
+    case ATTAQUER:
+        return "ATTAQUER";
+    case DEFENDRE:
+        return "DEFENDRE";
+    case RESTORER:
+        return "RESTORER";
+    case MORT:
+        return "MORT";
+    case INUTILISABLE:
+        return "INUTILISABLE";
+    default:
+        return "ERREUR";
+    }
+}
+
+status string_to_status(const char *status) // Fonction pour convertir une chaine de caractère en status pour le chargement
+{
+    if (strcmp(status, "ATTAQUER") == 0)
+    {
+        return ATTAQUER;
+    }
+    if (strcmp(status, "DEFENDRE") == 0)
+    {
+        return DEFENDRE;
+    }
+    if (strcmp(status, "RESTORER") == 0)
+    {
+        return RESTORER;
+    }
+    if (strcmp(status, "MORT") == 0)
+    {
+        return MORT;
+    }
+    if (strcmp(status, "INUTILISABLE") == 0)
+    {
+        return INUTILISABLE;
+    }
+    return -1;
+}
+
+void save(liste lst_personnage, liste lst_personnage_actif, liste roulotte, liste accessoire_acquis, liste lst_ennemie, liste lst_ennemie_actif, liste lst_sanitarium, liste lst_taverne, int numero_combat, int or, int perso_max, const char *nom_sauvegarde)
+{
+    FILE *fichier = fopen(nom_sauvegarde, "w"); // On ouvre le fichier en écriture
+    if (!fichier)                               // Si le fichier n'a pas pu être ouvert
+    {
+        printf("Erreur lors de l'ouverture du fichier\n");
+        return;
+    }
+    fprintf(fichier, "PERSONNAGE\n");                            // On écrit le nom de la section
+    for (cellule *tmp = lst_personnage; tmp; tmp = tmp->suivant) // On parcourt la liste des personnages
+    {
+        personnage *perso = (personnage *)tmp->valeur; // On récupère le personnage
+        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", perso->nom, perso->classe_perso.nom, perso->HP, perso->stress, perso->NBcombat, status_to_string(perso->status));
+    }
+    fprintf(fichier, "PERSONNAGE ACTIF\n");
+    for (cellule *tmp = lst_personnage_actif; tmp; tmp = tmp->suivant)
+    {
+        personnage *perso_actif = (personnage *)tmp->valeur;
+        fprintf(fichier, "%s,%s,%d,%d,%d,%d,%d\n", perso_actif->nom, perso_actif->classe_perso.nom, perso_actif->HP, perso_actif->stress, perso_actif->NBcombat, status_to_string(perso_actif->status));
+    }
+    fprintf(fichier, "ACCESSOIRE_ACQUIS\n");
+    for (cellule *tmp = accessoire_acquis; tmp; tmp = tmp->suivant)
+    {
+        accessoire *acc_acquis = (accessoire *)tmp->valeur;
+        fprintf(fichier, "%s,%d,%d,%d,%d,%d,%d\n", acc_acquis->nom, acc_acquis->prix, acc_acquis->attbonus, acc_acquis->defbonus, acc_acquis->HPbonus, acc_acquis->heal_bonus, acc_acquis->strred);
+    }
+    fprintf(fichier, "SANITARIUM\n");
+    for (cellule *tmp = lst_sanitarium; tmp; tmp = tmp->suivant)
+    {
+        personnage *sani = (personnage *)tmp->valeur;
+        fprintf(fichier, "%s,%s,%d,%d,%d,%d,%d\n", sani->nom, sani->classe_perso.nom, sani->HP, sani->stress, sani->NBcombat, status_to_string(sani->status));
+    }
+    fprintf(fichier, "TAVERNE\n");
+    for (cellule *tmp = lst_taverne; tmp; tmp = tmp->suivant)
+    {
+        personnage *tav = (personnage *)tmp->valeur;
+        fprintf(fichier, "%s,%s,%d,%d,%d,%d,%d\n", tav->nom, tav->classe_perso.nom, tav->HP, tav->stress, tav->NBcombat, status_to_string(tav->status));
+    }
+    fprintf(fichier, "NUMERO COMBAT\n");
+    fprintf(fichier, "%d\n", numero_combat);
+    fprintf(fichier, "OR\n");
+    fprintf(fichier, "%d\n", or);
+    fprintf(fichier, "PERSO MAX\n");
+    fprintf(fichier, "%d\n", perso_max);
+    fclose(fichier);
+}
+
 int main(void)
 {
+    // TODO : Roulotte aléatoire avec 3 objets choisis aléatoirement parmis tous les accessoires du jeu à chaque fin de combat
     liste lst_classe = NULL;
     liste lst_personnage = NULL;
     liste lst_personnage_actif = NULL;
@@ -470,11 +561,35 @@ int main(void)
     int numero_combat = 0;
     int perso_max = 1;
     int or = 0;
+    int sauvegarde = 0;
+    char nom_sauvegarde[50];
 
     lire_csv_classe(&lst_classe);
-    lire_csv_personnage(&lst_personnage, &lst_classe);
     lire_csv_accessoire(&roulotte);
     lire_csv_ennemi(&lst_ennemie);
+    lire_csv_personnage(&lst_personnage, &lst_classe);
+
+    printf("Bienvenue dans Darkest Dungeon !\n");
+    printf("Souhaitez vous sauvegarder cette partie dans un fichier ? (O/N) : ");
+    char choix[1];
+    scanf("%s", choix);
+    if (choix[0] == 'O' || choix[0] == 'o')
+    {
+        printf("Donnez un nom a votre sauvegarde (Mettez pas d'extension de fichier par pitié): ");
+        scanf("%s", nom_sauvegarde);
+        strcat(nom_sauvegarde, ".csv");                        // strcat permet de concaténer des chaines de caractères afin de rajouter l'extension .csv au nom de la sauvegarde donner par l'utilisateur
+        FILE *sauvegarde_fichier = fopen(nom_sauvegarde, "w"); // On ouvre ou crée le fichier de sauvegarde en écriture toujours
+        if (!sauvegarde_fichier)
+        {
+            printf("Erreur lors de l'ouverture/création du fichier de sauvegarde\n");
+            return 1;
+        }
+        save(lst_personnage, lst_personnage_actif, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde);
+        fclose(sauvegarde_fichier);
+        sauvegarde = 1;
+        printf("La sauvegarde a bien été effectuée\n");
+        printf("Attention jeunes aventuriers, les sauvegardes ne se font seulement qu'entre les combats quand vous êtes autour du feu de camp après avoir triomphé d'un ennemi et avoir fait le choix de placer ou non un personnage dans le sanitarium et la taverne\n");
+    }
 
     srand(time(NULL)); // Initialisation de la seed pour la génération de nombre aléatoire
 
@@ -574,6 +689,10 @@ int main(void)
                     scanf("%s ", &choix_joueur); // On redemande un choix
                 }
                 ((personnage *)tmp->valeur)->accessoire = (supprimer_num(&accessoire_acquis, atoi(choix_joueur)))->valeur; // On donne l'accessoire au personnage
+            }
+            if (sauvegarde) // Si le joueur a sauvegardé
+            {
+                save(lst_personnage, lst_personnage_actif, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde); // On sauvegarde la partie
             }
         }
         printf("le combat commence\n \n");
@@ -772,5 +891,15 @@ int main(void)
             }
         }
     }
+    printf("Fin du jeu\n");
+    printf("Les personnages suivant se réjouisent de leur victoire :\n");
+    afficher(lst_personnage);
+    printf("Ils ont gagné %d or\n", or);
+    printf("Ils ressortent de l'aventure avec les accessoires suivants :\n");
+    afficher(accessoire_acquis);
+    printf("Darkest Dungeon\n");
+    printf("Par : Yacine et Liam\n");
+    printf("Avec la participation de l'Université Gustave Eiffel\n");
+    printf("Merci d'avoir joué\n");
     return 0;
 }
