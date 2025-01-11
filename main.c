@@ -454,7 +454,7 @@ void lire_csv_personnage(liste *lst_personnage, liste *lst_classe)
     fclose(fichier); // On ferme le fichier
 }
 
-const char *status_to_string(status status) // Fonction pour convertir un status en chaine de caractère pour la sauvagarde
+const char *statut_to_string(status status) // Fonction pour convertir un status en chaine de caractère pour la sauvagarde
 {
     switch (status)
     {
@@ -473,7 +473,7 @@ const char *status_to_string(status status) // Fonction pour convertir un status
     }
 }
 
-status string_to_status(const char *status) // Fonction pour convertir une chaine de caractère en status pour le chargement
+status string_to_statut(const char *status) // Fonction pour convertir une chaine de caractère en status pour le chargement
 {
     if (strcmp(status, "ATTAQUER") == 0)
     {
@@ -510,7 +510,7 @@ void save(liste lst_personnage, liste lst_personnage_actif, liste roulotte, list
     for (cellule *tmp = lst_personnage; tmp; tmp = tmp->suivant) // On parcourt la liste des personnages
     {
         personnage *perso = (personnage *)tmp->valeur;                                                                                                            // On récupère le personnage
-        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", perso->nom, perso->classe_perso.nom, perso->HP, perso->stress, perso->NBcombat, status_to_string(perso->status)); // On écrit les infos du personnage dans le fichier et on utilise status_to_string pour convertir le status en chaine de caractère
+        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", perso->nom, perso->classe_perso.nom, perso->HP, perso->stress, perso->NBcombat, statut_to_string(perso->status)); // On écrit les infos du personnage dans le fichier et on utilise statut_to_string pour convertir le status en chaine de caractère
     }
     fprintf(fichier, "ACCESSOIRE_ACQUIS\n");
     for (cellule *tmp = accessoire_acquis; tmp; tmp = tmp->suivant)
@@ -522,13 +522,13 @@ void save(liste lst_personnage, liste lst_personnage_actif, liste roulotte, list
     for (cellule *tmp = lst_sanitarium; tmp; tmp = tmp->suivant)
     {
         personnage *sani = (personnage *)tmp->valeur;
-        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", sani->nom, sani->classe_perso.nom, sani->HP, sani->stress, sani->NBcombat, status_to_string(sani->status));
+        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", sani->nom, sani->classe_perso.nom, sani->HP, sani->stress, sani->NBcombat, statut_to_string(sani->status));
     }
     fprintf(fichier, "TAVERNE\n");
     for (cellule *tmp = lst_taverne; tmp; tmp = tmp->suivant)
     {
         personnage *tav = (personnage *)tmp->valeur;
-        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", tav->nom, tav->classe_perso.nom, tav->HP, tav->stress, tav->NBcombat, status_to_string(tav->status));
+        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", tav->nom, tav->classe_perso.nom, tav->HP, tav->stress, tav->NBcombat, statut_to_string(tav->status));
     }
     fprintf(fichier, "NUMERO COMBAT\n");
     fprintf(fichier, "%d\n", numero_combat);
@@ -564,7 +564,7 @@ void chargement(liste *lst_personnage, liste *lst_personnage_actif, liste *acces
                 perso->HP = HP;                                                                             // On met les HP du personnage actuel car dans ajout_personnage on a mis les hp correspondant à la classe et même chose pour les autres attributs
                 perso->stress = stress;
                 perso->NBcombat = NBcombat;
-                perso->status = string_to_status(status);
+                perso->status = string_to_statut(status);
             }
         }
         if (strcmp(ligne, "ACCESSOIRE_ACQUIS\n") == 0) // Si on lit la section ACCESSOIRE_ACQUIS
@@ -590,7 +590,7 @@ void chargement(liste *lst_personnage, liste *lst_personnage_actif, liste *acces
                 sani->HP = HP;
                 sani->stress = stress;
                 sani->NBcombat = NBcombat;
-                sani->status = string_to_status(status);
+                sani->status = string_to_statut(status);
             }
         }
         if (strcmp(ligne, "TAVERNE\n") == 0) // Si on lit la section TAVERNE
@@ -606,7 +606,7 @@ void chargement(liste *lst_personnage, liste *lst_personnage_actif, liste *acces
                 tav->HP = HP;
                 tav->stress = stress;
                 tav->NBcombat = NBcombat;
-                tav->status = string_to_status(status);
+                tav->status = string_to_statut(status);
             }
         }
         if (strcmp(ligne, "NUMERO COMBAT\n") == 0)
@@ -705,6 +705,35 @@ int main(void)
         {
             perso_max++; // On augmente le nombre de personnage max
         }
+        for (int num = 0; num < perso_max; num++) // On choisit les personnages actifs
+        {
+            printf("Voici les personnages disponible:\n");
+            afficher(lst_personnage);
+            printf("Voici les personnages actifs:\n");
+            afficher(lst_personnage_actif);
+            char choix_perso[3];
+            printf("Choix du personnage numero %d/%d (ou 'N' pour ne pas choisir) : ", num + 1, perso_max);
+            scanf("%s", choix_perso);
+            printf("\n");
+            if (choix_perso[0] == 'N' || choix_perso[0] == 'n' && taille_liste(lst_personnage_actif) > 0) // Si le joueur ne veut pas choisir de personnage
+            {
+                continue; // On passe à la sélécion du prochain personnage
+            }
+            else if (choix_perso[0] == 'N' || choix_perso[0] == 'n' && taille_liste(lst_personnage_actif) == 0) // Si le joueur ne veut pas choisir de personnage mais qu'il n'y a pas de personnage actif
+            {
+                printf("Vous devez choisir au moins un personnage\n");
+                num--; // On refait le dernier choix
+                continue;
+            }
+            int choix_num = atoi(choix_perso);                              // atoi permet de convertir une chaine de caractère en entier
+            if (choix_num < 0 || choix_num >= taille_liste(lst_personnage)) // Si le numéro de personnage est invalide
+            {
+                printf("Le choix est invalide\n");
+                num--; // On refait le dernier choix
+                continue;
+            }
+            ajouter_cellule(&lst_personnage_actif, supprimer_num(&lst_personnage, choix_num)); // Si tout se passe bien on ajoute le personnage à la liste des personnages actifs
+        }
         if (numero_combat >= 1) // Permet d'éviter d'afficher la roulotte et de choisir des accessoires au premier combat alors qu'on a pas encore d'or ou gagné de combat
         {
             if (sauvegarde) // Si le joueur a choisi de sauvegarder la partie
@@ -722,7 +751,6 @@ int main(void)
             while (choix_boutique[0] != 'Q' && choix_boutique[0] != 'q')
             {
                 int int_choix_boutique = atoi(choix_boutique); // atoi permet de convertir une chaine de caractère en entier
-                printf("DEBUG : %d\n", int_choix_boutique);
                 if (int_choix_boutique < 0 || int_choix_boutique >= taille_liste(roulotte))
                 {
                     printf("Le choix est invalide\n");
@@ -732,7 +760,8 @@ int main(void)
                     cellule *tmp = roulotte;
                     int parcours_liste = 0;
                     for (; int_choix_boutique != parcours_liste; tmp = tmp->suivant, parcours_liste++)
-                        ;                                       // Boucle vide pour aller sur la cellule rechercher
+                        ; // Boucle vide pour aller sur la cellule rechercher
+                    printf("DEBUG : %d / PRIX : %d\n", int_choix_boutique, ((accessoire *)tmp->valeur)->prix);
                     if (((accessoire *)tmp->valeur)->prix > or) // Si le joueur n'a pas assez d'or
                     {
                         printf("Vous n'avez pas assez d'or\n");
@@ -741,7 +770,7 @@ int main(void)
                     else
                     {
                         ajouter_cellule(&accessoire_acquis, supprimer_num(&roulotte, int_choix_boutique)); // On ajoute l'accessoire acquis à la liste des accessoires acquis
-                        or -= ((accessoire *)accessoire_acquis->valeur)->prix;                    // On retire le prix de l'accessoire acheté à l'or du joueur
+                        or -= ((accessoire *)tmp->valeur)->prix;                                           // On retire le prix de l'accessoire à l'or
                     }
                 }
                 printf("Voici les accessoires possédés:\n");
@@ -771,35 +800,6 @@ int main(void)
                 }
                 ((personnage *)tmp->valeur)->accessoire = (supprimer_num(&accessoire_acquis, atoi(choix_perso_accessoire)))->valeur; // On donne l'accessoire au personnage
             }
-        }
-        for (int num = 0; num < perso_max; num++) // On choisit les personnages actifs
-        {
-            printf("Voici les personnages disponible:\n");
-            afficher(lst_personnage);
-            printf("Voici les personnages actifs:\n");
-            afficher(lst_personnage_actif);
-            char choix_perso[3];
-            printf("Choix du personnage numero %d/%d (ou 'N' pour ne pas choisir) : ", num + 1, perso_max);
-            scanf("%s", choix_perso);
-            printf("\n");
-            if (choix_perso[0] == 'N' || choix_perso[0] == 'n' && taille_liste(lst_personnage_actif) > 0) // Si le joueur ne veut pas choisir de personnage
-            {
-                continue; // On passe à la sélécion du prochain personnage
-            }
-            else if (choix_perso[0] == 'N' || choix_perso[0] == 'n' && taille_liste(lst_personnage_actif) == 0) // Si le joueur ne veut pas choisir de personnage mais qu'il n'y a pas de personnage actif
-            {
-                printf("Vous devez choisir au moins un personnage\n");
-                num--; // On refait le dernier choix
-                continue;
-            }
-            int choix_num = atoi(choix_perso);                                    // atoi permet de convertir une chaine de caractère en entier
-            if (choix_num < 0 || choix_num >= taille_liste(lst_personnage)) // Si le numéro de personnage est invalide
-            {
-                printf("Le choix est invalide\n");
-                num--; // On refait le dernier choix
-                continue;
-            }
-            ajouter_cellule(&lst_personnage_actif, supprimer_num(&lst_personnage, choix_num)); // Si tout se passe bien on ajoute le personnage à la liste des personnages actifs
         }
         printf("le combat commence\n \n");
         ajouter_cellule(&lst_ennemie_actif, supprimer_num(&lst_ennemie, 0)); // On ajoute le premier ennemie à la liste des ennemies actifs
@@ -938,7 +938,7 @@ int main(void)
                     afficher(lst_personnage);
                     printf("Quel personnage voulez vous mettre dans le sanitarium ? : ");
                     int choix_sanitarium = 0;
-                    scanf("%d", &choix_sanitarium);                                    // On demande quel personnage le joueur veut mettre dans le sanitarium
+                    scanf("%d", &choix_sanitarium);                                               // On demande quel personnage le joueur veut mettre dans le sanitarium
                     if (choix_sanitarium < 0 || choix_sanitarium >= taille_liste(lst_personnage)) // Si le numéro de personnage est invalide
                     {
                         printf("Le choix est invalide\n");
@@ -985,7 +985,7 @@ int main(void)
                     afficher(lst_personnage);
                     printf("Quel personnage voulez vous mettre dans la taverne ? : ");
                     int choix_taverne = 0;
-                    scanf("%d", &choix_taverne);                                    // On demande quel personnage le joueur veut mettre dans la taverne
+                    scanf("%d", &choix_taverne);                                            // On demande quel personnage le joueur veut mettre dans la taverne
                     if (choix_taverne < 0 || choix_taverne >= taille_liste(lst_personnage)) // Si le numéro de personnage est invalide
                     {
                         printf("Le choix est invalide\n");
