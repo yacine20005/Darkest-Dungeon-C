@@ -16,7 +16,7 @@ typedef enum
     RESTORER,
     MORT, // plus de PV DONC MORT
     INUTILISABLE // PLUS DE 100 de stress donc inutilisable
-}status;
+} status;
 
 typedef struct
 {
@@ -47,10 +47,7 @@ typedef struct
     int NBcombat;
     accessoire *accessoire;
     status status;
-
 } personnage;
-
-
 
 typedef struct
 {
