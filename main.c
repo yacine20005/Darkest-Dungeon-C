@@ -628,6 +628,24 @@ void chargement(liste *lst_personnage, liste *lst_personnage_actif, liste *acces
     fclose(fichier); // On ferme le fichier car on est de bonnes personnes et on ferme toujours les fichiers après les avoir ouverts c'est la base de la politesse en programmation C
 }
 
+
+void free_cellule(cellule *c)
+{
+    free(c ->valeur);
+    free(c);
+}
+
+void free_liste(liste *l)
+{
+    cellule *tmp2;
+    for(cellule *tmp = *l; tmp; tmp = tmp2)
+    {   
+        tmp2 = tmp->suivant;
+        free_cellule(tmp);
+    }
+}
+
+
 int main(void)
 {
     liste lst_classe = NULL;
@@ -850,7 +868,9 @@ int main(void)
             }
             if (((ennemie *)lst_ennemie_actif->valeur)->HP <= 0) // Si l'ennemie est mort
             {
-                free(supprimer_num(&lst_ennemie_actif, 0)); // On le supprime de la liste des ennemies actifs
+                fprintf(stderr, "L'ennemie est mort\n");
+                free_cellule(supprimer_num(&lst_ennemie_actif, 0)); // On le supprime de la liste des ennemies actifs
+                fprintf(stderr, "ahhhhhhhh");
                 continue;                                   // Sert à skip le tour des ennemies si l'ennemie est mort
             }
             printf("Au tour des ennemies\n");
@@ -864,7 +884,7 @@ int main(void)
             attaque_ennemie(tmp->valeur, lst_ennemie_actif->valeur, att_enemie); // On attaque le personnage choisi
             if (((personnage *)tmp->valeur)->status == MORT)                     // Si le personnage est mort
             {
-                free(supprimer_num(&lst_personnage_actif, personnage_choisi)); // On le supprime de la liste des personnages actifs
+                free_cellule(supprimer_num(&lst_personnage_actif, personnage_choisi)); // On le supprime de la liste des personnages actifs
             }
         } // Fin du tour
         if (fin_combat(lst_personnage_actif, lst_ennemie_actif) == 1) // Si on a perdu le combat
@@ -885,7 +905,7 @@ int main(void)
                                    (((personnage *)lst_personnage_actif->valeur)->accessoire)->defbonus,
                                    (((personnage *)lst_personnage_actif->valeur)->accessoire)->HPbonus,
                                    (((personnage *)lst_personnage_actif->valeur)->accessoire)->heal_bonus,
-                                   (((personnage *)lst_personnage_actif->valeur)->accessoire)->strred, TYPE_ACCESSOIRE); // Permet de copier l'accessoire dans la liste des accessoires initialement équipé par le personnage dans la liste des accessoires acquis la folie le code de malade
+                                   (((personnage *)lst_personnage_actif->valeur)->accessoire)->strred, TYPE_ACCESSOIRE); // Permet de copier l'accessoire dans la liste des accessoires initialement équipé par le personnage dans la liste des accessoires acquis la folie le code de malade                           // Le personnage n'a plus d'accessoire
                 free(((personnage *)lst_personnage_actif->valeur)->accessoire);                                          // On libère la mémoire de l'accessoire équipé par le personnage
                 ((personnage *)lst_personnage_actif->valeur)->accessoire = NULL;                                         // Le personnage n'a plus d'accessoire
             }
@@ -1007,5 +1027,14 @@ int main(void)
     printf("Par : Yacine et Liam\n");
     printf("Avec la participation de l'Université Gustave Eiffel\n");
     printf("Merci d'avoir joué\n");
+    free_liste(&lst_personnage);
+    free_liste(&lst_personnage_actif);
+    free_liste(&roulotte);
+    free_liste(&accessoire_acquis);
+    free_liste(&lst_ennemie);
+    free_liste(&lst_ennemie_actif);
+    free_liste(&lst_sanitarium);
+    free_liste(&lst_taverne);
+    free_liste(&lst_classe);
     return 0;
 }
