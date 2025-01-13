@@ -278,7 +278,7 @@ void attaque_personnage(personnage *perso, ennemie *ennemi)
         att_total = 1; // Sinon on inflige 1 de dégât fallait être plus fort
     }
     ennemi->HP -= att_total; // On retire les dégâts à l'ennemie
-    printf("L'ennemie %s a perdu %d HP, il est maintenant a %d HP\n", ennemi->nom, att_total, ennemi->HP);
+    printf("L'ennemi %s a perdu %d HP, il/elle est maintenant a %d HP\n", ennemi->nom, att_total, ennemi->HP);
 }
 
 void attaque_ennemie(personnage *perso, ennemie *ennemi, int type)
@@ -295,11 +295,11 @@ void attaque_ennemie(personnage *perso, ennemie *ennemi, int type)
         }
         attstrenn = (attstrenn - strred) * ((rand() % 40 / 100.0) + (80 / 100.0)); // On calcule le stress à infligé
         perso->stress += attstrenn;                                                // On ajoute le stress au personnage
-        printf("%s a subi %d stress, il est maintenant a %d stress\n", perso->nom, attstrenn, perso->stress);
+        printf("%s a subi %d stress, il/est est maintenant a %d stress\n", perso->nom, attstrenn, perso->stress);
         if (perso->stress >= 100) // Si le personnage a 100 ou plus de stress
         {
             perso->status = INUTILISABLE; // Le perso devient inutilisable
-            printf("Le personnage %s a atteins 100 ou plus de stress est inutilisable \n", perso->nom);
+            printf("Le personnage %s a atteint 100 ou plus de stress et est devenu inutilisable \n", perso->nom);
         }
     }
     else // Si l'ennemie attaque le personnage
@@ -326,7 +326,7 @@ void attaque_ennemie(personnage *perso, ennemie *ennemi, int type)
         }
         else
         {
-            printf("Le personnage %s a perdu %d HP, il est maintenant a %d HP\n", perso->nom, att_total, perso->HP);
+            printf("Le personnage %s a perdu %d HP, il/elle est maintenant a %d HP\n", perso->nom, att_total, perso->HP);
         }
     }
 }
@@ -346,7 +346,7 @@ void restaurer(personnage *perso)
     {
         perso->HP += hpgagner; // Sinon on ajoute les HP gagnés
     }
-    printf("%s a gagne %d HP, il est maintenant a %d HP\n", perso->nom, hpgagner, perso->HP);
+    printf("%s a gagner %d HP, il/elle est maintenant a %d HP\n", perso->nom, hpgagner, perso->HP);
 }
 
 void taverne(liste taverne)
@@ -498,7 +498,7 @@ status string_to_statut(const char *status) // Fonction pour convertir une chain
     return -1;
 }
 
-void save(liste lst_personnage, liste lst_personnage_actif, liste roulotte, liste accessoire_acquis, liste lst_ennemie, liste lst_ennemie_actif, liste lst_sanitarium, liste lst_taverne, int numero_combat, int or, int perso_max, const char *nom_sauvegarde)
+void save(liste lst_personnage_total, liste roulotte, liste accessoire_acquis, liste lst_ennemie, liste lst_ennemie_actif, liste lst_sanitarium, liste lst_taverne, int numero_combat, int or, int perso_max, const char *nom_sauvegarde)
 {
     FILE *fichier = fopen(nom_sauvegarde, "w"); // On ouvre le fichier en écriture
     if (!fichier)                               // Si le fichier n'a pas pu être ouvert
@@ -506,8 +506,8 @@ void save(liste lst_personnage, liste lst_personnage_actif, liste roulotte, list
         printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
-    fprintf(fichier, "PERSONNAGE\n");                            // On écrit le nom de la section
-    for (cellule *tmp = lst_personnage; tmp; tmp = tmp->suivant) // On parcourt la liste des personnages
+    fprintf(fichier, "PERSONNAGE\n");                                  // On écrit le nom de la section
+    for (cellule *tmp = lst_personnage_total; tmp; tmp = tmp->suivant) // On parcourt la liste des personnages
     {
         personnage *perso = (personnage *)tmp->valeur;                                                                                                            // On récupère le personnage
         fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", perso->nom, perso->classe_perso.nom, perso->HP, perso->stress, perso->NBcombat, statut_to_string(perso->status)); // On écrit les infos du personnage dans le fichier et on utilise statut_to_string pour convertir le status en chaine de caractère
@@ -540,7 +540,7 @@ void save(liste lst_personnage, liste lst_personnage_actif, liste roulotte, list
     printf("Sauvegarde effectuée\n");
 }
 
-void chargement(liste *lst_personnage, liste *lst_personnage_actif, liste *accessoire_acquis, liste *lst_sanitarium, liste *lst_taverne, liste *lst_classe, int *numero_combat, int * or, int *perso_max, const char *nom_sauvegarde)
+void chargement(liste *lst_personnage_total, liste *accessoire_acquis, liste *lst_sanitarium, liste *lst_taverne, liste *lst_classe, int *numero_combat, int * or, int *perso_max, const char *nom_sauvegarde)
 {
     FILE *fichier = fopen(nom_sauvegarde, "r"); // On ouvre le fichier en lecture
     if (!fichier)                               // Si le fichier n'a pas pu être ouvert
@@ -558,7 +558,7 @@ void chargement(liste *lst_personnage, liste *lst_personnage_actif, liste *acces
                 char nom[50], nom_classe[50], status[50];                                                   // On crée des tableaux de caractère pour stocker chaque infos des personnages
                 int HP, stress, NBcombat;                                                                   // On crée des variables pour stocker les infos
                 sscanf(ligne, "%[^,],%[^,],%d,%d,%d,%s", nom, nom_classe, &HP, &stress, &NBcombat, status); // On lit les infos de la ligne actuelle [^,] permet toujours de lire une chaine de caractère jusqu'à la virgule
-                ajouter_personnage(lst_personnage, lst_classe, nom, nom_classe, TYPE_PERSONNAGE);           // On ajoute le personnage à la tete de la liste
+                ajouter_personnage(lst_personnage_total, lst_classe, nom, nom_classe, TYPE_PERSONNAGE);     // On ajoute le personnage à la tete de la liste
                 cellule *tmp = *lst_personnage;                                                             // On récupère la tête de la liste
                 personnage *perso = (personnage *)tmp->valeur;                                              // Pour ensuite récupérer le personnage en lui même
                 perso->HP = HP;                                                                             // On met les HP du personnage actuel car dans ajout_personnage on a mis les hp correspondant à la classe et même chose pour les autres attributs
@@ -628,27 +628,26 @@ void chargement(liste *lst_personnage, liste *lst_personnage_actif, liste *acces
     fclose(fichier); // On ferme le fichier car on est de bonnes personnes et on ferme toujours les fichiers après les avoir ouverts c'est la base de la politesse en programmation C
 }
 
-
 void free_cellule(cellule *c)
 {
-    free(c ->valeur);
+    free(c->valeur);
     free(c);
 }
 
 void free_liste(liste *l)
 {
     cellule *tmp2;
-    for(cellule *tmp = *l; tmp; tmp = tmp2)
-    {   
+    for (cellule *tmp = *l; tmp; tmp = tmp2)
+    {
         tmp2 = tmp->suivant;
         free_cellule(tmp);
     }
 }
 
-
 int main(void)
 {
     liste lst_classe = NULL;
+    liste lst_personnage_total = NULL;
     liste lst_personnage = NULL;
     liste lst_personnage_actif = NULL;
     liste roulotte = NULL; // c'est la liste de tous les accessoires mais on change le nom pour correspondre au sujet
@@ -658,8 +657,9 @@ int main(void)
     liste lst_sanitarium = NULL;
     liste lst_taverne = NULL;
 
+    int defaite = 0;
     int numero_combat = 0;
-    int perso_max = 1;
+    int perso_max = 2;
     int or = 0;
     int sauvegarde = 0;
     char nom_sauvegarde[50];
@@ -667,7 +667,7 @@ int main(void)
     lire_csv_classe(&lst_classe);
     lire_csv_accessoire(&roulotte);
     lire_csv_ennemi(&lst_ennemie);
-    lire_csv_personnage(&lst_personnage, &lst_classe);
+    lire_csv_personnage(&lst_personnage_total, &lst_classe);
 
     printf("Bienvenue dans Darkest Dungeon !\n");
 
@@ -698,7 +698,7 @@ int main(void)
         scanf("%s", choix_sauvegarde);
         if (choix_sauvegarde[0] == 'O' || choix_sauvegarde[0] == 'o')
         {
-            printf("Donnez un nom a votre sauvegarde (Mettez pas d'extension de fichier par pitié): ");
+            printf("Donnez un nom a votre sauvegarde (N'inscrivez pas l'extension .csv) : ");
             scanf("%s", nom_sauvegarde);
             strcat(nom_sauvegarde, ".csv");                        // strcat permet de concaténer des chaines de caractères afin de rajouter l'extension .csv au nom de la sauvegarde donner par l'utilisateur
             FILE *sauvegarde_fichier = fopen(nom_sauvegarde, "w"); // On ouvre ou crée le fichier de sauvegarde en écriture toujours
@@ -707,10 +707,10 @@ int main(void)
                 printf("Erreur lors de l'ouverture/création du fichier de sauvegarde\n");
                 return 1;
             }
-            save(lst_personnage, lst_personnage_actif, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde);
+            save(lst_personnage_total, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde);
             fclose(sauvegarde_fichier);
             sauvegarde = 1;
-            printf("Attention jeunes aventuriers, les sauvegardes ne se font seulement qu'entre les combats quand vous êtes autour du feu de camp après avoir triomphé d'un ennemi et avoir fait le choix de placer ou non un personnage dans le sanitarium et la taverne\n");
+            printf("Attention jeunes aventuriers, les sauvegardes ne se font seulement qu'entre les combats quand vous êtes autour du feu de camp !\n");
         }
     }
 
@@ -718,8 +718,13 @@ int main(void)
 
     while (numero_combat < 10) // Tant qu'on a pas passé le niveau 10
     {
-        printf("Combat numero %d\n", numero_combat);
-        if (numero_combat % 2 == 0) // Si le numéro de combat est pair
+        printf("Combat numéro %d\n", numero_combat);
+        if (numero_combat % 2 == 0)
+        {
+            ajouter_cellule(&lst_personnage, supprimer_num(&lst_personnage_total, 0));
+            ajouter_cellule(&lst_personnage, supprimer_num(&lst_personnage_total, 0));
+        }
+        if (numero_combat == 5) // Si le numéro de combat est pair
         {
             perso_max++; // On augmente le nombre de personnage max
         }
@@ -730,7 +735,7 @@ int main(void)
             printf("Voici les personnages actifs:\n");
             afficher(lst_personnage_actif);
             char choix_perso[3];
-            printf("Choix du personnage numero %d/%d (ou 'N' pour ne pas choisir) : ", num + 1, perso_max);
+            printf("Choix du personnage numéro %d/%d (ou 'N' pour ne pas choisir) : ", num + 1, perso_max);
             scanf("%s", choix_perso);
             printf("\n");
             if (choix_perso[0] == 'N' || choix_perso[0] == 'n' && taille_liste(lst_personnage_actif) > 0) // Si le joueur ne veut pas choisir de personnage
@@ -756,7 +761,7 @@ int main(void)
         {
             if (sauvegarde) // Si le joueur a choisi de sauvegarder la partie
             {
-                save(lst_personnage, lst_personnage_actif, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde); // On sauvegarde la partie
+                save(lst_personnage_total, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde); // On sauvegarde la partie
             }
             printf("Voici les accessoires possédés:\n");
             afficher(accessoire_acquis);
@@ -778,8 +783,7 @@ int main(void)
                     cellule *tmp = roulotte;
                     int parcours_liste = 0;
                     for (; int_choix_boutique != parcours_liste; tmp = tmp->suivant, parcours_liste++)
-                        ; // Boucle vide pour aller sur la cellule rechercher
-                    printf("DEBUG : %d / PRIX : %d\n", int_choix_boutique, ((accessoire *)tmp->valeur)->prix);
+                        ;                                       // Boucle vide pour aller sur la cellule rechercher
                     if (((accessoire *)tmp->valeur)->prix > or) // Si le joueur n'a pas assez d'or
                     {
                         printf("Vous n'avez pas assez d'or\n");
@@ -805,7 +809,7 @@ int main(void)
                 afficher(accessoire_acquis);
                 printf("Quel accessoire voulez vous donner a %s ? : (N pour Aucun) : ", ((personnage *)tmp->valeur)->nom);
                 char choix_perso_accessoire[3];
-                scanf("%s", &choix_perso_accessoire);
+                scanf("%s", choix_perso_accessoire);
                 if (choix_perso_accessoire[0] == 'N' || choix_perso_accessoire[0] == 'n')
                 {
                     continue;
@@ -814,7 +818,7 @@ int main(void)
                 {
                     printf("Le choix est invalide\n");
                     printf("Quel accessoire voulez vous donner a %s ? : ", ((personnage *)tmp->valeur)->nom);
-                    scanf("%s ", &choix_perso_accessoire); // On redemande un choix
+                    scanf("%s ", choix_perso_accessoire); // On redemande un choix
                 }
                 ((personnage *)tmp->valeur)->accessoire = (supprimer_num(&accessoire_acquis, atoi(choix_perso_accessoire)))->valeur; // On donne l'accessoire au personnage
             }
@@ -868,10 +872,8 @@ int main(void)
             }
             if (((ennemie *)lst_ennemie_actif->valeur)->HP <= 0) // Si l'ennemie est mort
             {
-                fprintf(stderr, "L'ennemie est mort\n");
                 free_cellule(supprimer_num(&lst_ennemie_actif, 0)); // On le supprime de la liste des ennemies actifs
-                fprintf(stderr, "ahhhhhhhh");
-                continue;                                   // Sert à skip le tour des ennemies si l'ennemie est mort
+                continue;                                           // Sert à skip le tour des ennemies si l'ennemie est mort
             }
             printf("Au tour des ennemies\n");
             int att_enemie = rand() % 2;                                           // Permet de choisir aléatoirement si l'ennemie attaque ou stresse le personnage
@@ -890,6 +892,7 @@ int main(void)
         if (fin_combat(lst_personnage_actif, lst_ennemie_actif) == 1) // Si on a perdu le combat
         {
             printf("Vous avez perdu le combat\n");
+            defaite = 1; // On met la défaite à 1 pour afficher le message de défaite
             break;
         }
         printf("Vous avez gagne le combat\n");
@@ -1017,17 +1020,30 @@ int main(void)
             }
         }
     }
-    printf("Fin du jeu\n");
-    printf("Les personnages suivant se réjouisent de leur victoire :\n");
-    afficher(lst_personnage);
-    printf("Ils ont gagné %d or\n", or);
-    printf("Ils ressortent de l'aventure avec les accessoires suivants :\n");
-    afficher(accessoire_acquis);
+    if (!defaite)
+    {
+        printf("Fin du jeu\n");
+        printf("Les personnages suivant se réjouisent de leur victoire :\n");
+        afficher(lst_personnage);
+        printf("Ils ont gagné %d or\n", or);
+        printf("Ils ressortent de l'aventure avec les accessoires suivants :\n");
+        afficher(accessoire_acquis);
+    }
+    else
+    {
+        printf("Fin du jeu\n");
+        printf("les personnages suivant pleurent leur défaite :\n");
+        afficher(lst_personnage);
+        printf("Ils ont certes gagné %d or mais à quel prix ?\n", or);
+        printf("Ils ressortent de cette mésaventure avec les accessoires suivants en ayant fouillé les corps de leur compagnons tombés au combat :\n");
+        afficher(accessoire_acquis);
+    }
     printf("Darkest Dungeon\n");
     printf("Par : Yacine et Liam\n");
     printf("Avec la participation de l'Université Gustave Eiffel\n");
     printf("Merci d'avoir joué\n");
     free_liste(&lst_personnage);
+    free_liste(&lst_personnage_total);
     free_liste(&lst_personnage_actif);
     free_liste(&roulotte);
     free_liste(&accessoire_acquis);
