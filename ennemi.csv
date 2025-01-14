@@ -1,11 +1,11 @@
 NOM,NIVEAU,ATT,DEF,HP,ATTSTRESS
-Patient 13,10,20,18,75,50
-GitHub Copilot,9,18,16,65,45
-Bernard,8,16,14,55,40
-Panos,7,14,12,45,35
-Batman,6,12,10,35,30
-Oryx,5,10,8,30,25
-Athéon,4,8,6,25,20
-Liam,3,6,4,20,15
-Yacine,2,4,2,15,10
-Goblin,1,2,0,10,5
+Patient 13,10,10,8,50,25
+GitHub Copilot,9,9,7,45,20
+Bernard,8,8,6,40,15
+Panos,7,7,5,35,10
+Batman,6,6,4,30,10
+Oryx,5,5,3,25,5
+Athéon,4,4,2,20,5
+Liam,3,3,1,15,5
+Yacine,2,2,0,10,5
+Goblin,1,1,0,5,2

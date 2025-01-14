@@ -1,0 +1,49 @@
+CLASSE
+Maître chien,10,6,17,5
+Chasseur de primes,7,3,25,3
+Vestale,3,0,20,10
+Furie,13,0,20,0
+PERSONNAGE_TOTAL
+PERSONNAGE
+Bouillot,Chasseur de primes,25,0,0,ATTAQUER
+Revuz,Furie,20,0,0,ATTAQUER
+Scooby-doo,Vestale,19,0,2,ATTAQUER
+Sammy,Maître chien,17,0,2,ATTAQUER
+Maitre Yoda,Chasseur de primes,25,0,5,ATTAQUER
+Damso,Vestale,20,0,0,ATTAQUER
+Kaaris,Furie,20,0,0,ATTAQUER
+Maissa Ben Hamouda,Furie,20,0,7,ATTAQUER
+Gims,Maître chien,17,0,3,ATTAQUER
+Nekfeu,Chasseur de primes,25,0,3,ATTAQUER
+PERSONNAGE_ACTIF
+ROULOTTE
+Honda NSX,1000,0,1000,0,0,0
+Pingouin de Linux,100,100,100,100,100,100
+LIB MLV,50,0,100,0,0,0
+Potion de stress,10,0,0,0,0,10
+ACCESSOIRE_ACQUIS
+XM4,25,30,0,0,0,20
+Bouclier en diamant,15,0,20,0,0,0
+Monster Energy,15,0,0,0,20,0
+Bouclier,10,0,10,0,0,0
+Epee en diamant,15,20,0,0,0,0
+Bouclier en bois,5,0,5,0,0,0
+Epee,10,10,0,0,0,0
+Akimbo Saug,20,20,0,0,0,10
+Potion de soin,10,0,0,0,10,0
+Epee en bois,5,5,0,0,0,0
+Segmentation fault,50,0,0,100,100,0
+Pointeur C (->),50,30,20,0,0,100
+Casque de Maissa,30,0,20,10,0,50
+Red Bull,15,0,0,0,0,20
+ENNEMIE
+GitHub Copilot,9,9,7,45,20
+ENNEMIE_ACTIF
+SANITARIUM
+TAVERNE
+NUMERO COMBAT
+9
+OR
+30
+PERSO MAX
+3

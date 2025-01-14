@@ -1,18 +1,18 @@
 NOM,PRIX,ATTBONUS,DEFBONUS,HPMAXBONUS,HEALBONUS,STRESSRED
-Bouclier en bois,5,0,3,0,0,0
-Bouclier,10,0,5,0,0,0
-Bouclier en diamant,15,0,10,0,0,0
-Epee en bois,5,3,0,0,0,0
-Epee,10,5,0,0,0,0
-Epee en diamant,15,10,0,0,0,0
-Potion de soin,10,0,0,0,5,0
-Monster Energy,15,0,0,0,10,0
-Potion de stress,10,0,0,0,0,5
-Red Bull,15,0,0,0,0,10
-Akimbo Saug,20,15,0,0,0,5
-XM4,25,20,0,0,0,10
-Casque de Maissa,30,0,10,5,0,35
-Pointeur C (->),50,25,10,0,0,100
+Bouclier en bois,5,0,5,0,0,0
+Bouclier,10,0,10,0,0,0
+Bouclier en diamant,15,0,20,0,0,0
+Epee en bois,5,5,0,0,0,0
+Epee,10,10,0,0,0,0
+Epee en diamant,15,20,0,0,0,0
+Potion de soin,10,0,0,0,10,0
+Monster Energy,15,0,0,0,20,0
+Potion de stress,10,0,0,0,0,10
+Red Bull,15,0,0,0,0,20
+Akimbo,20,20,0,0,0,10
+XM4,25,30,0,0,0,20
+Casque de Maissa,30,0,20,10,0,50
+Pointeur C (->),50,30,20,0,0,100
 LIB MLV,50,0,100,0,0,0
 Segmentation fault,50,0,0,100,100,0
 Pingouin de Linux,100,100,100,100,100,100

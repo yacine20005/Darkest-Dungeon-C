@@ -113,7 +113,7 @@ void ajouter_classe(liste *lst_classe, const char *nom, int att, int def, int hp
     new_cellule->valeur = c;            // On met la classe dans la cellule
     new_cellule->type = type;           // On met le type dans la cellule
     new_cellule->suivant = *lst_classe; // On met la cellule en tete de liste
-    *lst_classe = new_cellule;          // On met la nouvelle liste en tete de liste
+    *lst_classe = new_cellule;          // On spécifie la nouvelle liste avec la nouvelle cellule en tete
 }
 
 void ajouter_personnage(liste *lst_personnage, liste *lst_classe, const char *nom_perso, const char *nom_classe, type type)
@@ -147,7 +147,7 @@ void ajouter_personnage(liste *lst_personnage, liste *lst_classe, const char *no
         new_cellule->valeur = p;                // On met la classe dans la cellule
         new_cellule->type = type;               // On met le type dans la cellule
         new_cellule->suivant = *lst_personnage; // On met la cellule en tete de liste
-        *lst_personnage = new_cellule;          // On met la nouvelle liste en tete de liste
+        *lst_personnage = new_cellule;          // On spécifie la nouvelle liste avec la nouvelle cellule en tete
     }
     else // Si on a pas trouvé la classe
     {
@@ -164,7 +164,7 @@ void ajouter_accessoire(liste *lst_accessoire, const char *nom, int prix, int at
         printf("Erreur lors de l'allocation de la mémoire\n");
         return;
     }
-    strncpy(a->nom, nom, sizeof(a->nom) - 1); // On met les infos dans la classe
+    strncpy(a->nom, nom, sizeof(a->nom) - 1);
     a->nom[sizeof(a->nom) - 1] = '\0';
     a->prix = prix;
     a->attbonus = attbonus;
@@ -175,7 +175,7 @@ void ajouter_accessoire(liste *lst_accessoire, const char *nom, int prix, int at
     new_cellule->valeur = a;                // On met la classe dans la cellule
     new_cellule->type = type;               // On met le type dans la cellule
     new_cellule->suivant = *lst_accessoire; // On met la cellule en tete de liste
-    *lst_accessoire = new_cellule;          // On met la nouvelle liste en tete de liste
+    *lst_accessoire = new_cellule;          // On spécifie la nouvelle liste avec la nouvelle cellule en tete
 }
 
 void ajouter_ennemie(liste *lst_ennemie, const char *nom, int niveau, int att, int def, int hp, int attstr, type type)
@@ -187,7 +187,7 @@ void ajouter_ennemie(liste *lst_ennemie, const char *nom, int niveau, int att, i
         printf("Erreur lors de l'allocation de la mémoire\n");
         return;
     }
-    strncpy(e->nom, nom, sizeof(e->nom) - 1); // On met les infos dans la classe
+    strncpy(e->nom, nom, sizeof(e->nom) - 1);
     e->nom[sizeof(e->nom) - 1] = '\0';
     e->niveau = niveau;
     e->att = att;
@@ -197,7 +197,7 @@ void ajouter_ennemie(liste *lst_ennemie, const char *nom, int niveau, int att, i
     new_cellule->valeur = e;             // On met la classe dans la cellule
     new_cellule->type = type;            // On met le type dans la cellule
     new_cellule->suivant = *lst_ennemie; // On met la cellule en tete de liste
-    *lst_ennemie = new_cellule;          // On met la nouvelle liste en tete de liste
+    *lst_ennemie = new_cellule;          // On spécifie la nouvelle liste avec la nouvelle cellule en tete
 }
 
 void ajouter_cellule(liste *liste, cellule *c)
@@ -294,7 +294,11 @@ void attaque_ennemie(personnage *perso, ennemie *ennemi, int type)
             strred = ((accessoire *)perso->accessoire)->strred; // On récupère la réduction de stress apporté par l'accessoire
         }
         attstrenn = (attstrenn - strred) * ((rand() % 40 / 100.0) + (80 / 100.0)); // On calcule le stress à infligé
-        perso->stress += attstrenn;                                                // On ajoute le stress au personnage
+        if (attstrenn < 0)                                                         // Si le stress est infligé est négatif
+        {
+            attstrenn = 0; // On inflige 0 de stress
+        }
+        perso->stress += attstrenn; // On ajoute le stress au personnage
         printf("%s a subi %d stress, il/est est maintenant a %d stress\n", perso->nom, attstrenn, perso->stress);
         if (perso->stress >= 100) // Si le personnage a 100 ou plus de stress
         {
@@ -382,11 +386,11 @@ void lire_csv_accessoire(liste *lst_accessoire)
         printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
-    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    char ligne[100];                             // On crée ligne pour stocker les lignes du fichier
     fgets(ligne, sizeof(ligne), fichier);        // On ignore la première ligne car c'est les noms des colonnes
-    while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
+    while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne et on stocke les valeurs dans la variable ligne
     {
-        char nom[50]; // On crée un tableau de caractère pour stocker le nom
+        char nom[50];
         int prix, attbonus, defbonus, hpbonus, heal_bonus, strred;
         sscanf(ligne, "%[^,],%d,%d,%d,%d,%d,%d", nom, &prix, &attbonus, &defbonus, &hpbonus, &heal_bonus, &strred);      // On utilise sscanf pour lire les valeurs et le %[[^,]] permet de lire une chaine de caractère jusqu'à la virgule, on accède au nom sans & car c'est déjà un pointeur j'ai bloqué sur ca pdt 20min je suis accablé
         ajouter_accessoire(lst_accessoire, nom, prix, attbonus, defbonus, hpbonus, heal_bonus, strred, TYPE_ACCESSOIRE); // On ajoute l'accessoire à la liste
@@ -402,11 +406,11 @@ void lire_csv_classe(liste *lst_classe)
         printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
-    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    char ligne[100];                             // On crée ligne pour stocker les lignes du fichier
     fgets(ligne, sizeof(ligne), fichier);        // On ignore la première ligne car c'est les noms des colonnes
     while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
     {
-        char nom[50]; // On crée un tableau de caractère pour stocker le nom
+        char nom[50];
         int att, def, hpmax, rest;
         sscanf(ligne, "%[^,],%d,%d,%d,%d", nom, &att, &def, &hpmax, &rest);  // On utilise sscanf pour lire les valeurs
         ajouter_classe(lst_classe, nom, att, def, hpmax, rest, TYPE_CLASSE); // On ajoute la classe à la liste
@@ -422,11 +426,11 @@ void lire_csv_ennemi(liste *lst_ennemi)
         printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
-    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    char ligne[100];                             // On crée ligne pour stocker les lignes du fichier
     fgets(ligne, sizeof(ligne), fichier);        // On ignore la première ligne car c'est les noms des colonnes
     while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
     {
-        char nom[50]; // On crée un tableau de caractère pour stocker le nom
+        char nom[50];
         int niveau, att, def, hp, attstr;
         sscanf(ligne, "%[^,],%d,%d,%d,%d,%d", nom, &niveau, &att, &def, &hp, &attstr); // On utilise sscanf pour lire les valeurs
         ajouter_ennemie(lst_ennemi, nom, niveau, att, def, hp, attstr, TYPE_ENNEMIE);  // On ajoute l'ennemie à la liste
@@ -442,11 +446,11 @@ void lire_csv_personnage(liste *lst_personnage, liste *lst_classe)
         printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
-    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    char ligne[100];                             // On crée ligne pour stocker les lignes du fichier
     fgets(ligne, sizeof(ligne), fichier);        // On ignore la première ligne car c'est les noms des colonnes
     while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
     {
-        char nom[50], nom_classe[50]; // On crée un tableau de caractère pour stocker le nom
+        char nom[50], nom_classe[50];
         int HP, stress, NBcombat;
         sscanf(ligne, "%[^,],%[^,\n]", nom, nom_classe);                                  // On utilise sscanf pour lire les valeurs
         ajouter_personnage(lst_personnage, lst_classe, nom, nom_classe, TYPE_PERSONNAGE); // On ajoute le personnage à la liste
@@ -454,12 +458,12 @@ void lire_csv_personnage(liste *lst_personnage, liste *lst_classe)
     fclose(fichier); // On ferme le fichier
 }
 
-const char *statut_to_string(status status) // Fonction pour convertir un status en chaine de caractère pour la sauvagarde
+const char *statut_to_string(status status) // Fonction pour convertir un status en chaine de caractère pour la fonction de sauvegarde
 {
     switch (status)
     {
-    case ATTAQUER:
-        return "ATTAQUER";
+    case ATTAQUER:         // Si le status est ATTAQUER
+        return "ATTAQUER"; // On retourne la chaine de caractère "ATTAQUER"
     case DEFENDRE:
         return "DEFENDRE";
     case RESTORER:
@@ -473,11 +477,11 @@ const char *statut_to_string(status status) // Fonction pour convertir un status
     }
 }
 
-status string_to_statut(const char *status) // Fonction pour convertir une chaine de caractère en status pour le chargement
+status string_to_statut(const char *status) // Fonction pour convertir une chaine de caractère en status pour la fonction de chargement
 {
-    if (strcmp(status, "ATTAQUER") == 0)
+    if (strcmp(status, "ATTAQUER") == 0) // On compare la chaine avec strcmp pour savoir si c'est ATTAQUER
     {
-        return ATTAQUER;
+        return ATTAQUER; // On retourne le status ATTAQUER
     }
     if (strcmp(status, "DEFENDRE") == 0)
     {
@@ -498,7 +502,7 @@ status string_to_statut(const char *status) // Fonction pour convertir une chain
     return -1;
 }
 
-void save(liste lst_personnage_total, liste roulotte, liste accessoire_acquis, liste lst_ennemie, liste lst_ennemie_actif, liste lst_sanitarium, liste lst_taverne, int numero_combat, int or, int perso_max, const char *nom_sauvegarde)
+void save(liste lst_personnage_total, liste lst_personnage, liste lst_personnage_actif, liste lst_classe, liste roulotte, liste accessoire_acquis, liste lst_ennemie, liste lst_ennemie_actif, liste lst_sanitarium, liste lst_taverne, int numero_combat, int or, int perso_max, const char *nom_sauvegarde)
 {
     FILE *fichier = fopen(nom_sauvegarde, "w"); // On ouvre le fichier en écriture
     if (!fichier)                               // Si le fichier n'a pas pu être ouvert
@@ -506,17 +510,53 @@ void save(liste lst_personnage_total, liste roulotte, liste accessoire_acquis, l
         printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
-    fprintf(fichier, "PERSONNAGE\n");                                  // On écrit le nom de la section
-    for (cellule *tmp = lst_personnage_total; tmp; tmp = tmp->suivant) // On parcourt la liste des personnages
+    fprintf(fichier, "CLASSE\n");                            // On écrit la section qu'on s'apprête à sauvegarder
+    for (cellule *tmp = lst_classe; tmp; tmp = tmp->suivant) // On parcourt la liste des classes
     {
-        personnage *perso = (personnage *)tmp->valeur;                                                                                                            // On récupère le personnage
-        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", perso->nom, perso->classe_perso.nom, perso->HP, perso->stress, perso->NBcombat, statut_to_string(perso->status)); // On écrit les infos du personnage dans le fichier et on utilise statut_to_string pour convertir le status en chaine de caractère
+        classe *cls = (classe *)tmp->valeur;                                                       // On récupère la classe
+        fprintf(fichier, "%s,%d,%d,%d,%d\n", cls->nom, cls->att, cls->def, cls->HPmax, cls->rest); // On écrit les infos de la classe dans le fichier avec une virgule entre chaque info car c'est un fichier csv
+    }
+    fprintf(fichier, "PERSONNAGE_TOTAL\n");
+    for (cellule *tmp = lst_personnage_total; tmp; tmp = tmp->suivant)
+    {
+        personnage *perso = (personnage *)tmp->valeur;
+        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", perso->nom, perso->classe_perso.nom, perso->HP, perso->stress, perso->NBcombat, statut_to_string(perso->status)); // on utilise statut_to_string pour convertir le status en chaine de caractère
+    }
+    fprintf(fichier, "PERSONNAGE\n");
+    for (cellule *tmp = lst_personnage; tmp; tmp = tmp->suivant)
+    {
+        personnage *perso = (personnage *)tmp->valeur;
+        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", perso->nom, perso->classe_perso.nom, perso->HP, perso->stress, perso->NBcombat, statut_to_string(perso->status));
+    }
+    fprintf(fichier, "PERSONNAGE_ACTIF\n");
+    for (cellule *tmp = lst_personnage_actif; tmp; tmp = tmp->suivant)
+    {
+        personnage *perso = (personnage *)tmp->valeur;
+        fprintf(fichier, "%s,%s,%d,%d,%d,%s\n", perso->nom, perso->classe_perso.nom, perso->HP, perso->stress, perso->NBcombat, statut_to_string(perso->status));
+    }
+    fprintf(fichier, "ROULOTTE\n");
+    for (cellule *tmp = roulotte; tmp; tmp = tmp->suivant)
+    {
+        accessoire *acc = (accessoire *)tmp->valeur;
+        fprintf(fichier, "%s,%d,%d,%d,%d,%d,%d\n", acc->nom, acc->prix, acc->attbonus, acc->defbonus, acc->HPbonus, acc->heal_bonus, acc->strred);
     }
     fprintf(fichier, "ACCESSOIRE_ACQUIS\n");
     for (cellule *tmp = accessoire_acquis; tmp; tmp = tmp->suivant)
     {
         accessoire *acc_acquis = (accessoire *)tmp->valeur;
         fprintf(fichier, "%s,%d,%d,%d,%d,%d,%d\n", acc_acquis->nom, acc_acquis->prix, acc_acquis->attbonus, acc_acquis->defbonus, acc_acquis->HPbonus, acc_acquis->heal_bonus, acc_acquis->strred);
+    }
+    fprintf(fichier, "ENNEMIE\n");
+    for (cellule *tmp = lst_ennemie; tmp; tmp = tmp->suivant)
+    {
+        ennemie *enn = (ennemie *)tmp->valeur;
+        fprintf(fichier, "%s,%d,%d,%d,%d,%d\n", enn->nom, enn->niveau, enn->att, enn->def, enn->HP, enn->attstr);
+    }
+    fprintf(fichier, "ENNEMIE_ACTIF\n");
+    for (cellule *tmp = lst_ennemie_actif; tmp; tmp = tmp->suivant)
+    {
+        ennemie *enn = (ennemie *)tmp->valeur;
+        fprintf(fichier, "%s,%d,%d,%d,%d,%d\n", enn->nom, enn->niveau, enn->att, enn->def, enn->HP, enn->attstr);
     }
     fprintf(fichier, "SANITARIUM\n");
     for (cellule *tmp = lst_sanitarium; tmp; tmp = tmp->suivant)
@@ -536,11 +576,24 @@ void save(liste lst_personnage_total, liste roulotte, liste accessoire_acquis, l
     fprintf(fichier, "%d\n", or);
     fprintf(fichier, "PERSO MAX\n");
     fprintf(fichier, "%d\n", perso_max);
-    fclose(fichier);
+    fclose(fichier); // On ferme le fichier quand même c'est mieux
     printf("Sauvegarde effectuée\n");
 }
 
-void chargement(liste *lst_personnage_total, liste *accessoire_acquis, liste *lst_sanitarium, liste *lst_taverne, liste *lst_classe, int *numero_combat, int * or, int *perso_max, const char *nom_sauvegarde)
+void ajouter_cellule_fin(liste *liste, cellule *c)
+{
+    if (!(*liste)) // Si la liste est vide
+    {
+        *liste = c; // La liste sera au final composée de la cellule
+        return;
+    }
+    cellule *tmp = *liste;
+    for (; tmp->suivant; tmp = tmp->suivant)
+        ;             // Boucle vide pour se placer sur la dernière cellule
+    tmp->suivant = c; // On met la cellule à la fin de la liste
+}
+
+void chargement(liste *lst_personnage_total, liste *lst_personnage, liste *lst_personnage_actif, liste *lst_classe, liste *roulotte, liste *accessoire_acquis, liste *lst_ennemie, liste *lst_ennemie_actif, liste *lst_sanitarium, liste *lst_taverne, int *numero_combat, int * or, int *perso_max, const char *nom_sauvegarde)
 {
     FILE *fichier = fopen(nom_sauvegarde, "r"); // On ouvre le fichier en lecture
     if (!fichier)                               // Si le fichier n'a pas pu être ouvert
@@ -548,33 +601,105 @@ void chargement(liste *lst_personnage_total, liste *accessoire_acquis, liste *ls
         printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
-    char ligne[100];                             // On crée un tableau de caractère pour stocker les lignes du fichier
+    char ligne[100];
     while (fgets(ligne, sizeof(ligne), fichier)) // On lit le fichier ligne par ligne tant qu'une ligne existe en gros on lit tout le fichier
     {
-        if (strcmp(ligne, "PERSONNAGE\n") == 0) // Si on lit la ligne qui indique la section PERSONNAGE
+        if (strcmp(ligne, "CLASSE\n") == 0) // Si on lit la section CLASSE
         {
-            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "ACCESSOIRE_ACQUIS\n") != 0) // On lit les lignes jusqu'à qu'on arrive à la section ACCESSOIRE_ACQUIS qui est le prochain si le fichier est bien normalisé
+            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "PERSONNAGE_TOTAL\n") != 0) // On lit les lignes jusqu'à la section PERSONNAGE_TOTAL
             {
-                char nom[50], nom_classe[50], status[50];                                                   // On crée des tableaux de caractère pour stocker chaque infos des personnages
-                int HP, stress, NBcombat;                                                                   // On crée des variables pour stocker les infos
-                sscanf(ligne, "%[^,],%[^,],%d,%d,%d,%s", nom, nom_classe, &HP, &stress, &NBcombat, status); // On lit les infos de la ligne actuelle [^,] permet toujours de lire une chaine de caractère jusqu'à la virgule
-                ajouter_personnage(lst_personnage_total, lst_classe, nom, nom_classe, TYPE_PERSONNAGE);     // On ajoute le personnage à la tete de la liste
-                cellule *tmp = *lst_personnage;                                                             // On récupère la tête de la liste
-                personnage *perso = (personnage *)tmp->valeur;                                              // Pour ensuite récupérer le personnage en lui même
-                perso->HP = HP;                                                                             // On met les HP du personnage actuel car dans ajout_personnage on a mis les hp correspondant à la classe et même chose pour les autres attributs
+                char nom[50];
+                int att, def, hpmax, rest;
+                sscanf(ligne, "%[^,],%d,%d,%d,%d", nom, &att, &def, &hpmax, &rest);
+                ajouter_classe(lst_classe, nom, att, def, hpmax, rest, TYPE_CLASSE);
+            }
+        }
+        if (strcmp(ligne, "PERSONNAGE_TOTAL\n") == 0) // Si on lit la ligne qui indique la section PERSONNAGE_TOTAL
+        {
+            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "PERSONNAGE\n") != 0)
+            {
+                char nom[50], nom_classe[50], status[50];
+                int HP, stress, NBcombat;
+                sscanf(ligne, "%[^,],%[^,],%d,%d,%d,%s", nom, nom_classe, &HP, &stress, &NBcombat, status);
+                ajouter_personnage(lst_personnage_total, lst_classe, nom, nom_classe, TYPE_PERSONNAGE);
+                cellule *tmp = *lst_personnage_total;
+                personnage *perso = (personnage *)tmp->valeur;
+                perso->HP = HP;
                 perso->stress = stress;
                 perso->NBcombat = NBcombat;
                 perso->status = string_to_statut(status);
             }
         }
-        if (strcmp(ligne, "ACCESSOIRE_ACQUIS\n") == 0) // Si on lit la section ACCESSOIRE_ACQUIS
+        if (strcmp(ligne, "PERSONNAGE\n") == 0)
         {
-            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "SANITARIUM\n") != 0) // On lit les lignes jusqu'à la section SANITARIUM
+            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "PERSONNAGE_ACTIF\n") != 0)
+            {
+                char nom[50], nom_classe[50], status[50];
+                int HP, stress, NBcombat;
+                sscanf(ligne, "%[^,],%[^,],%d,%d,%d,%s", nom, nom_classe, &HP, &stress, &NBcombat, status);
+                ajouter_personnage(lst_personnage, lst_classe, nom, nom_classe, TYPE_PERSONNAGE);
+                cellule *tmp = *lst_personnage;
+                personnage *perso = (personnage *)tmp->valeur;
+                perso->HP = HP;
+                perso->stress = stress;
+                perso->NBcombat = NBcombat;
+                perso->status = string_to_statut(status);
+            }
+        }
+        if (strcmp(ligne, "PERSONNAGE_ACTIF\n") == 0)
+        {
+            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "ROULOTTE\n") != 0)
+            {
+                char nom[50], nom_classe[50], status[50];
+                int HP, stress, NBcombat;
+                sscanf(ligne, "%[^,],%[^,],%d,%d,%d,%s", nom, nom_classe, &HP, &stress, &NBcombat, status);
+                ajouter_personnage(lst_personnage_actif, lst_classe, nom, nom_classe, TYPE_PERSONNAGE);
+                cellule *tmp = *lst_personnage_actif;
+                personnage *perso = (personnage *)tmp->valeur;
+                perso->HP = HP;
+                perso->stress = stress;
+                perso->NBcombat = NBcombat;
+                perso->status = string_to_statut(status);
+            }
+        }
+        if (strcmp(ligne, "ROULOTTE\n") == 0)
+        {
+            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "ACCESSOIRE_ACQUIS\n") != 0)
+            {
+                char nom[50];
+                int prix, attbonus, defbonus, hpbonus, heal_bonus, strred;
+                sscanf(ligne, "%[^,],%d,%d,%d,%d,%d,%d", nom, &prix, &attbonus, &defbonus, &hpbonus, &heal_bonus, &strred);
+                ajouter_accessoire(roulotte, nom, prix, attbonus, defbonus, hpbonus, heal_bonus, strred, TYPE_ACCESSOIRE);
+            }
+        }
+        if (strcmp(ligne, "ACCESSOIRE_ACQUIS\n") == 0)
+        {
+            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "ENNEMIE\n") != 0)
             {
                 char nom[50];
                 int prix, attbonus, defbonus, hpbonus, heal_bonus, strred;
                 sscanf(ligne, "%[^,],%d,%d,%d,%d,%d,%d", nom, &prix, &attbonus, &defbonus, &hpbonus, &heal_bonus, &strred);
                 ajouter_accessoire(accessoire_acquis, nom, prix, attbonus, defbonus, hpbonus, heal_bonus, strred, TYPE_ACCESSOIRE);
+            }
+        }
+        if (strcmp(ligne, "ENNEMIE\n") == 0)
+        {
+            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "ENNEMIE_ACTIF\n") != 0)
+            {
+                char nom[50];
+                int niveau, att, def, hp, attstr;
+                sscanf(ligne, "%[^,],%d,%d,%d,%d,%d", nom, &niveau, &att, &def, &hp, &attstr);
+                ajouter_ennemie(lst_ennemie, nom, niveau, att, def, hp, attstr, TYPE_ENNEMIE);
+            }
+        }
+        if (strcmp(ligne, "ENNEMIE_ACTIF\n") == 0)
+        {
+            while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "SANITARIUM\n") != 0)
+            {
+                char nom[50];
+                int niveau, att, def, hp, attstr;
+                sscanf(ligne, "%[^,],%d,%d,%d,%d,%d", nom, &niveau, &att, &def, &hp, &attstr);
+                ajouter_ennemie(lst_ennemie_actif, nom, niveau, att, def, hp, attstr, TYPE_ENNEMIE);
             }
         }
         if (strcmp(ligne, "SANITARIUM\n") == 0)
@@ -593,7 +718,7 @@ void chargement(liste *lst_personnage_total, liste *accessoire_acquis, liste *ls
                 sani->status = string_to_statut(status);
             }
         }
-        if (strcmp(ligne, "TAVERNE\n") == 0) // Si on lit la section TAVERNE
+        if (strcmp(ligne, "TAVERNE\n") == 0)
         {
             while (fgets(ligne, sizeof(ligne), fichier) && strcmp(ligne, "NUMERO COMBAT\n") != 0)
             {
@@ -630,8 +755,8 @@ void chargement(liste *lst_personnage_total, liste *accessoire_acquis, liste *ls
 
 void free_cellule(cellule *c)
 {
-    free(c->valeur);
-    free(c);
+    free(c->valeur); // on libère la mémoire de la valeur de la cellule
+    free(c);         // on libère la mémoire de la cellule en elle-même
 }
 
 void free_liste(liste *l)
@@ -664,11 +789,6 @@ int main(void)
     int sauvegarde = 0;
     char nom_sauvegarde[50];
 
-    lire_csv_classe(&lst_classe);
-    lire_csv_accessoire(&roulotte);
-    lire_csv_ennemi(&lst_ennemie);
-    lire_csv_personnage(&lst_personnage_total, &lst_classe);
-
     printf("Bienvenue dans Darkest Dungeon !\n");
 
     printf("Souhaitez vous charger une partie ? (O/N) : ");
@@ -688,10 +808,18 @@ int main(void)
             strcat(nom_sauvegarde, ".csv");
             fichier = fopen(nom_sauvegarde, "r");
         }
-        chargement(&lst_personnage, &lst_personnage_actif, &accessoire_acquis, &lst_sanitarium, &lst_taverne, &lst_classe, &numero_combat, &or, &perso_max, nom_sauvegarde);
-        sauvegarde = 1;
+        fclose(fichier);
+        chargement(&lst_personnage_total, &lst_personnage, &lst_personnage_actif, &lst_classe, &roulotte, &accessoire_acquis, &lst_ennemie, &lst_ennemie_actif, &lst_sanitarium, &lst_taverne, &numero_combat, &or, &perso_max, nom_sauvegarde);
+        sauvegarde = 1; // On indique qu'on a chargé une sauvegarde et que donc on va la sauvegarder durant la partie
     }
-    if (!sauvegarde) // Si le joueur n'a pas chargé de sauvegarde on lui propose de sauvegarder
+    else // Si one ne charge pas de partie on prend les infos du jeu depuis les fichiers csv
+    {
+        lire_csv_classe(&lst_classe);
+        lire_csv_accessoire(&roulotte);
+        lire_csv_ennemi(&lst_ennemie);
+        lire_csv_personnage(&lst_personnage_total, &lst_classe);
+    }
+    if (!sauvegarde) // Si le joueur n'a pas charger de sauvegarde on lui propose de sauvegarder
     {
         printf("Souhaitez vous sauvegarder cette partie dans un fichier ? (O/N) : ");
         char choix_sauvegarde[2];
@@ -707,10 +835,10 @@ int main(void)
                 printf("Erreur lors de l'ouverture/création du fichier de sauvegarde\n");
                 return 1;
             }
-            save(lst_personnage_total, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde);
+            save(lst_personnage_total, lst_personnage, lst_personnage_actif, lst_classe, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde); // On sauvegarde la partie
             fclose(sauvegarde_fichier);
-            sauvegarde = 1;
-            printf("Attention jeunes aventuriers, les sauvegardes ne se font seulement qu'entre les combats quand vous êtes autour du feu de camp !\n");
+            sauvegarde = 1;                                                                                                                              // On indique qu'on va sauvegarder durant la partie
+            printf("Attention jeunes aventuriers, les sauvegardes ne se font seulement qu'entre les combats quand vous êtes autour du feu de camp !\n"); // On prévient le joueur que la sauvegarde ne se fait qu'entre les combats
         }
     }
 
@@ -718,13 +846,17 @@ int main(void)
 
     while (numero_combat < 10) // Tant qu'on a pas passé le niveau 10
     {
+        if (sauvegarde) // Si le joueur a choisi de sauvegarder la partie
+        {
+            save(lst_personnage_total, lst_personnage, lst_personnage_actif, lst_classe, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde); // On sauvegarde la partie
+        }
         printf("Combat numéro %d\n", numero_combat);
-        if (numero_combat % 2 == 0)
+        if (numero_combat % 2 == 0) // On ajoute des personnages disponibles au combat
         {
             ajouter_cellule(&lst_personnage, supprimer_num(&lst_personnage_total, 0));
             ajouter_cellule(&lst_personnage, supprimer_num(&lst_personnage_total, 0));
         }
-        if (numero_combat == 5) // Si le numéro de combat est pair
+        if (numero_combat == 5) // Si le numéro de combat est 5 on donne la possibilité au joueur de recruter un personnage de plus
         {
             perso_max++; // On augmente le nombre de personnage max
         }
@@ -759,10 +891,6 @@ int main(void)
         }
         if (numero_combat >= 1) // Permet d'éviter d'afficher la roulotte et de choisir des accessoires au premier combat alors qu'on a pas encore d'or ou gagné de combat
         {
-            if (sauvegarde) // Si le joueur a choisi de sauvegarder la partie
-            {
-                save(lst_personnage_total, roulotte, accessoire_acquis, lst_ennemie, lst_ennemie_actif, lst_sanitarium, lst_taverne, numero_combat, or, perso_max, nom_sauvegarde); // On sauvegarde la partie
-            }
             printf("Voici les accessoires possédés:\n");
             afficher(accessoire_acquis);
             printf("Voici les accessoires disponibles:\n");
