@@ -451,7 +451,6 @@ void lire_csv_personnage(liste *lst_personnage, liste *lst_classe)
     while (fgets(ligne, sizeof(ligne), fichier)) // On lit ensuite le fichier ligne par ligne
     {
         char nom[50], nom_classe[50];
-        int HP, stress, NBcombat;
         sscanf(ligne, "%[^,],%[^,\n]", nom, nom_classe);                                  // On utilise sscanf pour lire les valeurs
         ajouter_personnage(lst_personnage, lst_classe, nom, nom_classe, TYPE_PERSONNAGE); // On ajoute le personnage à la liste
     }
@@ -870,11 +869,11 @@ int main(void)
             printf("Choix du personnage numéro %d/%d (ou 'N' pour ne pas choisir) : ", num + 1, perso_max);
             scanf("%s", choix_perso);
             printf("\n");
-            if (choix_perso[0] == 'N' || choix_perso[0] == 'n' && taille_liste(lst_personnage_actif) > 0) // Si le joueur ne veut pas choisir de personnage
+            if ((choix_perso[0] == 'N' || choix_perso[0] == 'n') && taille_liste(lst_personnage_actif) > 0) // Si le joueur ne veut pas choisir de personnage
             {
                 continue; // On passe à la sélécion du prochain personnage
             }
-            else if (choix_perso[0] == 'N' || choix_perso[0] == 'n' && taille_liste(lst_personnage_actif) == 0) // Si le joueur ne veut pas choisir de personnage mais qu'il n'y a pas de personnage actif
+            else if ((choix_perso[0] == 'N' || choix_perso[0] == 'n') && taille_liste(lst_personnage_actif) == 0) // Si le joueur ne veut pas choisir de personnage mais qu'il n'y a pas de personnage actif
             {
                 printf("Vous devez choisir au moins un personnage\n");
                 num--; // On refait le dernier choix
