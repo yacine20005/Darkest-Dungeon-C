@@ -38,9 +38,7 @@ Pour installer et exécuter le projet, suivez ces étapes :
    cd Darkest-Dungeon-C
    ```
 3. Compilez le projet :
-   ```sh
-   make
-   ```
+
 4. Exécutez le jeu :
    ```sh
    ./darkest_dungeon
