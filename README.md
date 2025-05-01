@@ -1,49 +1,47 @@
 ## Introduction
 
-Darkest-Dungeon-C est un jeu intégrant des éléments de rogue-like ainsi que des mécaniques de gestion de ressources et de stress.  
-Le jeu est développé en langage C et se joue en ligne de commande.
+Darkest-Dungeon-C is a game that integrates rogue-like elements as well as resource and stress management mechanics.  
+The game is developed in C language and is played in the command line.
 
-## À propos du jeu
+## About the game
 
-Darkest Dungeon est un jeu de rôle tactique au tour par tour. Le jeu se concentre sur les aventures d'une équipe de héros explorant des donjons, combattant des monstres et gérant le stress psychologique. 
-Les joueurs doivent équilibrer les ressources, les compétences des personnages et les afflictions mentales pour survivre aux horreurs qui les attendent. 
-Darkest-Dungeon-C cherche à créer une expérience en ligne de commande avec des commandes simples et une interface entièrement textuelle.
+Darkest Dungeon is a turn-based tactical role-playing game. The game focuses on the adventures of a team of heroes exploring dungeons, fighting monsters, and managing psychological stress. 
+Players must balance resources, character skills, and mental afflictions to survive the horrors that await them. 
+Darkest-Dungeon-C aims to create a command-line experience with simple commands and a fully textual interface.
 
-## Déroulement du jeu
+## Game flow
 
-Dans Darkest-Dungeon-C, vous dirigez une équipe de héros à travers des donjons remplis de dangers. 
-Le jeu se déroule au tour par tour, où chaque personnage peut effectuer des actions telles que l'attaque, la défense et la guérison.
-Les héros accumulent du stress au fur et à mesure de leur progression, ce qui peut les rendre instables et inefficaces en combat.
-La gestion du stress et des ressources est cruciale pour survivre.
+In Darkest-Dungeon-C, you lead a team of heroes through dungeons filled with dangers. 
+The game is turn-based, where each character can perform actions such as attacking, defending, and healing.
+Heroes accumulate stress as they progress, which can make them unstable and ineffective in combat.
+Managing stress and resources is crucial for survival.
 
-## Fonctionnalités
+## Features
 
-- Système de combat au tour par tour
-- Classes de personnages et compétences
-- Mécaniques de stress
-- Gestion de butin
-- Système de roulotte
-- Système de soin et de repos entre les combats
+- Turn-based combat system
+- Character classes and skills
+- Stress mechanics
+- Loot management
+- Caravan system
+- Healing and resting system between battles
 
 ## Installation
 
-Pour installer et exécuter le projet, suivez ces étapes :
+To install and run the project, follow these steps:
 
-1. Clonez le dépôt :
+1. Clone the repository:
    ```sh
    git clone https://github.com/yourusername/Darkest-Dungeon-C.git
    ```
-2. Accédez au répertoire du projet :
+2. Navigate to the project directory:
    ```sh
    cd Darkest-Dungeon-C
    ```
-3. Compilez le projet :
-
-4. Exécutez le jeu :
+3. Compile the project:
+   ```sh
+   gcc -o darkest_dungeon main.c
+   ```
+4. Run the game:
    ```sh
    ./darkest_dungeon
    ```
-
-## Contact
-
-Pour toute question ou retour, veuillez ouvrir une issue sur le dépôt.
